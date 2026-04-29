@@ -438,7 +438,7 @@ entries-container {
 Entries Filters
 */
 
-entries-filters {
+#entries-filters {
   display: none;
   align-items: flex-start;
   flex-direction: column;
