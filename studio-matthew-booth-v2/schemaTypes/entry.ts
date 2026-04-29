@@ -1,4 +1,5 @@
 import {ImageField, RichText} from '../utils/fields'
+import {ReferenceCheckboxes} from '../components/ReferenceCheckboxes'
 
 export default {
   name: 'entry',
@@ -116,6 +117,7 @@ export default {
       type: 'array',
       title: 'Categories',
       of: [{type: 'reference', to: [{type: 'category'}]}],
+      components: {input: ReferenceCheckboxes},
     },
     {
       name: 'blocks',
