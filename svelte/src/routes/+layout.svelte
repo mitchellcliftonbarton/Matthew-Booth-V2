@@ -1,9 +1,42 @@
 <script>
-	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import '../styles/global.css';
+	import NProgress from 'nprogress';
+	import 'nprogress/nprogress.css';
+	import { beforeNavigate, afterNavigate } from '$app/navigation';
 
-	let { children } = $props();
+	import MainNav from '$lib/components/MainNav.svelte';
+
+	// props
+	let { children, data } = $props();
+
+	// Vars
+	let loadingTimeout;
+
+	// configure nprogress
+	NProgress.configure({ showSpinner: false });
+
+	// handle navigation
+	beforeNavigate(() => {
+		// start nprogress
+		NProgress.start();
+	});
+
+	afterNavigate(() => {
+		// stop nprogress
+		NProgress.done();
+
+		// clear loading timeout
+		clearTimeout(loadingTimeout);
+	});
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
-{@render children()}
+<svelte:head>
+	<meta property="og:site_name" content="Matthew Booth" />
+	<meta property="og:locale" content="en_US" />
+</svelte:head>
+
+<MainNav />
+
+<main>
+	{@render children()}
+</main>
