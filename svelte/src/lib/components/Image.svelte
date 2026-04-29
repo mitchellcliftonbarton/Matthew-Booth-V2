@@ -8,6 +8,8 @@
 
 	// get src
 	const src = $derived(urlFor(imageUrl).width(width).url());
+
+	console.log(src)
 	let preloadSrc = $state(null);
 
 	onMount(() => {

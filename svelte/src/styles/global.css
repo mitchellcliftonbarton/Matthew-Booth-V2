@@ -204,7 +204,7 @@ default-page {
 Entry Item
 */
 
-entry-item {
+.entry-item {
   display: none;
   border-top: 0.5px solid #666;
   grid-column: 1 / -1;
@@ -289,8 +289,7 @@ entry-item {
 Entries Container
 */
 
-entries-container {
-  display: none;
+#entries-container {
   padding: 0 var(--spacing-sm) 5rem var(--spacing-sm);
   /* margin-top: -0.5px; */
 
@@ -304,10 +303,6 @@ entries-container {
     @media (min-width: 1024px) {
       grid-template-columns: 1fr 4fr 1fr 5fr 1fr;
     }
-  }
-
-  &.active {
-    display: block;
   }
 
   &.is-grid-view {
@@ -336,7 +331,7 @@ entries-container {
         margin-top: 2.5lh;
       }
 
-      entry-item {
+      .entry-item {
         border: none;
         grid-column: span 1 / span 1;
         aspect-ratio: 1;
