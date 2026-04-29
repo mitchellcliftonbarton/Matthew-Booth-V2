@@ -6,7 +6,7 @@ export async function load() {
 			...,
 			ogImage{ asset->{ url } }
 		},
-		"categories": *[_type == "category"] | order(title asc) { _id, title, singularTitle }
+		"categories": *[_type == "category" && count(*[_type == "entry" && references(^._id)]) > 0] | order(title asc) { _id, title, singularTitle }
 	}`).catch(() => ({ siteSettings: null, categories: [] }));
 
 	return {
