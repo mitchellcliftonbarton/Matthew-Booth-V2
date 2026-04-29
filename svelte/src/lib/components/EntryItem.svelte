@@ -10,8 +10,6 @@
   // props
   const { entry } = $props();
 
-  console.log(entry)
-
   // url params
   const categoryParam = $derived(page.url.searchParams.get('category'));
   const viewParam = $derived(page.url.searchParams.get('view'));

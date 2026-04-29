@@ -5,6 +5,7 @@
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
 
 	import MainNav from '$lib/components/MainNav.svelte';
+	import { page } from '$app/state';
 
 	// props
 	let { children, data } = $props();
@@ -36,7 +37,9 @@
 	<meta property="og:locale" content="en_US" />
 </svelte:head>
 
-<MainNav />
+{#if page.route.id !== '/index/[slug]'}
+	<MainNav />
+{/if}
 
 <main>
 	{@render children()}
