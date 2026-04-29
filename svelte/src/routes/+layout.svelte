@@ -31,7 +31,8 @@
 </script>
 
 <svelte:head>
-	<meta property="og:site_name" content="Matthew Booth" />
+	<title>{data.siteSettings?.siteTitle ?? 'Matthew Booth'}</title>
+	<meta property="og:site_name" content={data.siteSettings?.siteTitle ?? 'Matthew Booth'} />
 	<meta property="og:locale" content="en_US" />
 </svelte:head>
 

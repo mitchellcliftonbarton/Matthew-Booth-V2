@@ -1,3 +1,5 @@
+import {RichText} from '../../utils/fields'
+
 export default {
   name: 'cvSectionBlock',
   type: 'object',
@@ -15,7 +17,7 @@ export default {
           title: 'Year',
           fields: [
             {name: 'year', type: 'string', title: 'Year'},
-            {name: 'text', type: 'text', title: 'Text', rows: 3},
+            {name: 'text', type: 'array', title: 'Text', of: [RichText]},
           ],
           preview: {
             select: {title: 'year', subtitle: 'text'},
