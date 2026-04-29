@@ -1,29 +1,23 @@
 <script>
   // imports
-	import { urlFor } from '$lib/sanity/client';
-	import { onMount } from 'svelte';
+  import { urlFor } from '$lib/sanity/client';
 
-	// define props
-	let { imageUrl, alt, classes, width = 2600, preload = false } = $props();
+  // props
+  let { imageUrl, alt, classes, width = 2600 } = $props();
 
-	// get src
-	const src = $derived(urlFor(imageUrl).width(width).url());
+  // build src from sanity image url builder
+  const src = $derived(urlFor(imageUrl).width(width).url());
 
-	console.log(src)
-	let preloadSrc = $state(null);
-
-	onMount(() => {
-		if (preload) {
-			// Use Promise.resolve().then() to defer preloading until after the current execution stack
-			Promise.resolve().then(() => {
-				const img = new Image();
-				img.src = src;
-				img.onload = () => {
-					preloadSrc = src;
-				};
-			});
-		}
-	});
+  // track load state to add 'loaded' class when image is ready
+  let loaded = $state(false);
+  const classList = $derived([classes, loaded ? 'loaded' : ''].filter(Boolean).join(' '));
 </script>
 
-<img src={preloadSrc} {alt} class={classes} loading={preload ? 'eager' : 'lazy'} />
+<img
+  {src}
+  {alt}
+  class={classList}
+  loading="lazy"
+  onload={() => { loaded = true; }}
+  onerror={() => { loaded = true; }}
+/>
