@@ -1,4 +1,4 @@
-import {ImageField} from '../utils/fields'
+import {ImageField, RichText} from '../utils/fields'
 
 export default {
   name: 'entry',
@@ -60,9 +60,9 @@ export default {
     },
     {
       name: 'description',
-      type: 'text',
+      type: 'array',
       title: 'Description',
-      rows: 3,
+      of: [RichText],
     },
     {
       name: 'showTitleInFooter',
@@ -124,4 +124,13 @@ export default {
       of: [{type: 'textBlock'}, {type: 'carouselBlock'}, {type: 'singleMediaBlock'}],
     },
   ],
+  preview: {
+    select: {
+      title: 'title',
+      media: 'featuredImage.image',
+    },
+    prepare({title, media}: any) {
+      return {title, media: media?.asset}
+    },
+  },
 }

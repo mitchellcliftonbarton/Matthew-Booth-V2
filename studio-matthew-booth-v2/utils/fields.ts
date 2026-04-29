@@ -1,3 +1,25 @@
+export const RichText = {
+  type: 'block',
+  styles: [],
+  marks: {
+    decorators: [
+      {title: 'Strong', value: 'strong'},
+      {title: 'Emphasis', value: 'em'},
+    ],
+    annotations: [
+      {
+        name: 'link',
+        type: 'object',
+        title: 'Link',
+        fields: [
+          {name: 'href', type: 'string', title: 'URL'},
+          {name: 'blank', type: 'boolean', title: 'Open in new tab'},
+        ],
+      },
+    ],
+  },
+}
+
 export const ImageField = {
   type: 'image' as const,
   options: {hotspot: true},

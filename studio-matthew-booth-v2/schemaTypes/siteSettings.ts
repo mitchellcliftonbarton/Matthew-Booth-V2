@@ -1,4 +1,4 @@
-import {NavLink} from '../utils/fields'
+import {NavLink, RichText} from '../utils/fields'
 
 export default {
   name: 'siteSettings',
@@ -23,9 +23,9 @@ export default {
     },
     {
       name: 'globalIntro',
-      type: 'text',
+      type: 'array',
       title: 'Global Intro',
-      rows: 3,
+      of: [RichText],
     },
     {
       name: 'navLinks',
