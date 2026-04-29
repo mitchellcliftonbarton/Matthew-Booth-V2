@@ -8,7 +8,7 @@ export async function load() {
 				url
 			}
 		}
-	}`);
+	}`).catch(() => null);
 
 	return {
 		siteSettings

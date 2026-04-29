@@ -1,5 +1,5 @@
 <script>
-	import '../styles/global.css';
+	import '../styles/index.css';
 	import NProgress from 'nprogress';
 	import 'nprogress/nprogress.css';
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
