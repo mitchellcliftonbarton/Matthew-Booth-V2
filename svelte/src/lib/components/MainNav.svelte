@@ -8,6 +8,8 @@
   const siteSettings = $derived(page?.data?.siteSettings);
   const categories = $derived(page?.data?.categories ?? []);
 
+  console.log(page)
+
   // params
   const categoryParam = $derived(page.url.searchParams.get('category'));
   const viewParam = $derived(page.url.searchParams.get('view'));

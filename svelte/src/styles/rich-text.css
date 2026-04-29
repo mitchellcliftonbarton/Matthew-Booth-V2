@@ -1,4 +1,6 @@
 .rich-text {
+  white-space: pre-line;
+
   & > * + * {
     margin-top: 1lh;
   }
@@ -41,6 +43,8 @@
 }
 
 .rich-text-breaks-only {
+  white-space: pre-line;
+
   & > * + * {
     margin-top: 1.3em;
   }
