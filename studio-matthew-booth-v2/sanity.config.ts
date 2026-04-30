@@ -1,6 +1,7 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
+import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
 import {schemaTypes} from './schemaTypes'
 import {myStructure} from './myStructure'
 
@@ -13,7 +14,7 @@ export default defineConfig({
 
   plugins: [
     structureTool({
-      structure: myStructure,
+      structure: (S, context) => myStructure(S, context),
     }),
     visionTool(),
   ],

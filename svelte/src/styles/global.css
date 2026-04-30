@@ -1106,9 +1106,6 @@ Carousel Block
 }
 
 @media (max-width: 1024px) {
-  .prev-next {
-    display: none;
-  }
 
   p.row-title:not(:first-child) {
     margin-top: 0.25lh;

@@ -1,11 +1,13 @@
 import {ImageField, RichText} from '../utils/fields'
 import {ReferenceCheckboxes} from '../components/ReferenceCheckboxes'
+import {orderRankField} from '@sanity/orderable-document-list'
 
 export default {
   name: 'entry',
   type: 'document',
   title: 'Entry',
   fields: [
+    orderRankField({type: 'entry'}),
     {
       name: 'title',
       type: 'string',

@@ -67,7 +67,7 @@
 
     <div class="carousel-controls flex items-start gap-16 select-none">
       <!-- entry tracker: hidden on mobile -->
-      {#if filteredEntries.length > 0}
+      {#if filteredEntries.length > 1}
         <p class="entry-tracker hidden lg:block pointer-events-auto">
           <span class="current-category">{trackerLabel}</span>
           <span class="entry-index"> {currentIndex + 1}</span>/<span class="entry-total">{filteredEntries.length}</span>

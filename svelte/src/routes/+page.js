@@ -5,7 +5,7 @@ export async function load() {
   // categories are dereferenced to get full title/singularTitle objects
   // firstTextBlock is used as a text preview for entries in the Texts category with no featured image
   const entries = await client.fetch(`
-    *[_type == "entry"] | order(_createdAt asc) {
+    *[_type == "entry"] | order(orderRank asc) {
       _id,
       title,
       slug,
