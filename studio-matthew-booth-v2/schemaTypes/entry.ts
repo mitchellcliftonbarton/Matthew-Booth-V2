@@ -30,6 +30,13 @@ export default {
       initialValue: false,
     },
     {
+      name: 'externalAuthor',
+      type: 'boolean',
+      title: 'External Author',
+      description: 'Whether the author of this entry is not Matthew Booth.',
+      initialValue: false,
+    },
+    {
       name: 'featuredImage',
       type: 'object',
       title: 'Thumbnail Image',
