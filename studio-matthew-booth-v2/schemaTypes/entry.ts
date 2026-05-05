@@ -1,5 +1,6 @@
 import {ImageField, RichText} from '../utils/fields'
 import {ReferenceCheckboxes} from '../components/ReferenceCheckboxes'
+import {AdditionalInfoInput} from '../components/AdditionalInfoInput'
 import {orderRankField} from '@sanity/orderable-document-list'
 
 export default {
@@ -94,6 +95,7 @@ export default {
       title: 'Additional Info',
       description:
         'Additional information about the entry. Shown in the "Information" section on the slide item.',
+      components: {input: AdditionalInfoInput},
       of: [
         {
           type: 'object',
