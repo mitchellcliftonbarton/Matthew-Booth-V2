@@ -7,6 +7,7 @@ export default {
   name: 'entry',
   type: 'document',
   title: 'Entry',
+  fieldsets: [{name: 'titleOptions', title: ' ', options: {columns: 2}}],
   fields: [
     orderRankField({type: 'entry'}),
     {
@@ -28,6 +29,7 @@ export default {
       title: 'Italicize Title',
       description: 'Whether to italicize the title.',
       initialValue: false,
+      fieldset: 'titleOptions',
     },
     {
       name: 'externalAuthor',
@@ -35,6 +37,7 @@ export default {
       title: 'External Author',
       description: 'Whether the author of this entry is not Matthew Booth.',
       initialValue: false,
+      fieldset: 'titleOptions',
     },
     {
       name: 'featuredImage',
