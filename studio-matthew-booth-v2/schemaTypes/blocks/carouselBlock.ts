@@ -4,23 +4,11 @@ export default {
   title: 'Carousel',
   fields: [
     {
-      name: 'width',
-      type: 'number',
-      title: 'Width',
-      description: 'Used to determine the aspect ratio. Defaults to 1600.',
-      initialValue: 1600,
-    },
-    {
-      name: 'height',
-      type: 'number',
-      title: 'Height',
-      description: 'Used to determine the aspect ratio. Defaults to 900.',
-      initialValue: 900,
-    },
-    {
       name: 'media',
       type: 'array',
       title: 'Media',
+      description:
+        'If there are multiple blocks, the aspect ratio of the first image will determine the aspect ratio of the carousel.',
       of: [{type: 'carouselMediaItem'}],
     },
   ],

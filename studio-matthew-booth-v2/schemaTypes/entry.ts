@@ -31,7 +31,8 @@ export default {
     {
       name: 'featuredImage',
       type: 'object',
-      title: 'Featured Image',
+      title: 'Thumbnail Image',
+      description: 'The main image or video for the entry.',
       fields: [
         {
           name: 'mediaType',
@@ -66,6 +67,7 @@ export default {
       type: 'array',
       title: 'Description',
       of: [RichText],
+      description: 'The description of the entry shown in the list view.',
     },
     {
       name: 'showTitleInFooter',
@@ -90,6 +92,8 @@ export default {
       name: 'additionalInfo',
       type: 'array',
       title: 'Additional Info',
+      description:
+        'Additional information about the entry. Shown in the "Information" section on the slide item.',
       of: [
         {
           type: 'object',
@@ -97,7 +101,7 @@ export default {
           title: 'Info Item',
           fields: [
             {name: 'title', type: 'string', title: 'Title'},
-            {name: 'text', type: 'text', title: 'Text', rows: 3},
+            {name: 'text', type: 'array', title: 'Text', of: [RichText]},
             {
               name: 'relatedEntries',
               type: 'array',
