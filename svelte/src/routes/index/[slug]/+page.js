@@ -48,16 +48,15 @@ export async function load({ params, parent }) {
 
   if (!entry) throw error(404, 'Entry not found');
 
-  // compute prev/next from the unfiltered index for preloading
+  // compute prev/next 2 from the unfiltered index for preloading
   const currentIndex = entriesIndex.findIndex((e) => e.slug.current === params.slug);
-  const prevSlug = currentIndex > 0
-    ? entriesIndex[currentIndex - 1].slug.current
-    : entriesIndex[entriesIndex.length - 1]?.slug.current;
-  const nextSlug = currentIndex < entriesIndex.length - 1
-    ? entriesIndex[currentIndex + 1].slug.current
-    : entriesIndex[0]?.slug.current;
-
-  const adjacentSlugs = [...new Set([prevSlug, nextSlug].filter(Boolean))];
+  const len = entriesIndex.length;
+  const adjacentSlugs = [...new Set([
+    entriesIndex[(currentIndex - 2 + len) % len]?.slug.current,
+    entriesIndex[(currentIndex - 1 + len) % len]?.slug.current,
+    entriesIndex[(currentIndex + 1) % len]?.slug.current,
+    entriesIndex[(currentIndex + 2) % len]?.slug.current,
+  ].filter(Boolean))];
 
   // fetch _id so urlFor can build the exact same transform URL that Image.svelte will request
   const adjacentImages = adjacentSlugs.length
