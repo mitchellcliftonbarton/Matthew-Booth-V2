@@ -18,11 +18,15 @@
 
 	// handle navigation
 	beforeNavigate(() => {
-		loadingTimeout = setTimeout(() => NProgress.start(), 200);
+		// loadingTimeout = setTimeout(() => NProgress.start(), 200);
+
+		NProgress.start()
 	});
 
 	afterNavigate(() => {
-		clearTimeout(loadingTimeout);
+		// clearTimeout(loadingTimeout);
+		// NProgress.done();
+
 		NProgress.done();
 	});
 </script>

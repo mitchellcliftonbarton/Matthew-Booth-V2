@@ -103,11 +103,11 @@ body {
   color: var(--color-black);
 
   #nprogress .bar {
-		height: 1px;
-		background-color: var(--color-grey-2);
+		height: 2px;
+		background-color: red;
 
 		@media (min-width: 1024px) {
-			height: 2px;
+			height: 4px;
 		}
 	}
 }
@@ -952,57 +952,6 @@ Featured Image Block
 Single Media Block
 */
 
-.single-media-block {
-  figure {
-    max-width: fit-content;
-    max-height: var(--inner-height);
-    margin: 0 auto;
-
-    .image-container {
-      width: auto;
-      max-height: var(--inner-height);
-      overflow: hidden;
-
-      & > img {
-        object-fit: cover;
-        object-position: center;
-        width: 100%;
-        height: 100%;
-      }
-
-      .thumb img {
-        opacity: 0.8;
-        object-fit: cover;
-        object-position: center;
-        width: 100%;
-        height: 100%;
-      }
-    }
-  }
-
-  def-video {
-    max-width: fit-content;
-    margin: 0 auto;
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0px;
-      left: 0px;
-    }
-  }
-
-  &.type-video {
-    max-height: var(--inner-height);
-
-    div:first-child {
-      max-height: var(--inner-height);
-      max-width: fit-content;
-      margin: 0 auto;
-    }
-  }
-}
 
 /*
 Carousel Block
@@ -1109,5 +1058,371 @@ Carousel Block
 
   p.row-title:not(:first-child) {
     margin-top: 0.25lh;
+  }
+}
+
+/*
+Entry Detail Page
+*/
+
+#entry-detail {
+  overflow: hidden;
+
+  .slide-panels {
+    transition: transform 0.5s ease;
+  }
+
+  &.info-open .slide-panels {
+    transform: translateY(-100svh);
+  }
+
+  .slide-item-inner {
+    position: relative;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+  }
+
+  .slide-footer {
+    position: sticky;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 10;
+    align-items: flex-end;
+    height: min(var(--padding-amount), 5lh);
+    min-height: min(var(--padding-amount), 5lh);
+    margin-top: calc(min(var(--padding-amount), 5lh) * -1);
+    background: var(--gradient-bottom);
+
+    p, button {
+      pointer-events: auto;
+      position: relative;
+      z-index: 10;
+    }
+  }
+
+  /* fullscreen: blocks container is a flex child that grows to fill */
+  .slide-blocks {
+    padding: var(--padding-amount) 0;
+  }
+
+  /* multi-block: margin auto in the flex column centers short content, tall content scrolls */
+  .multi-block-content {
+    margin-block: auto;
+    padding: var(--padding-amount) 0;
+
+    & > section + section {
+      margin-top: 3lh;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .slide-blocks,
+    .multi-block-content {
+      padding-inline: var(--spacing-base);
+    }
+  }
+}
+
+/*
+Text Block
+*/
+
+.text-block {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/*
+No-blocks thumbnail (featured image)
+*/
+
+.featured-image-block {
+  max-height: var(--inner-height);
+  width: auto;
+  max-width: 100%;
+
+  img, video {
+    max-height: var(--inner-height);
+    width: auto;
+    max-width: 100%;
+    display: block;
+  }
+}
+
+/*
+Single Media Block (new Svelte component)
+*/
+
+.single-media-block {
+  /* solo: image is naturally sized, constrained to inner height */
+  &.is-solo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: var(--inner-height);
+
+    figure {
+      max-height: var(--inner-height);
+      width: auto;
+      max-width: 100%;
+
+      img {
+        max-height: var(--inner-height);
+        width: auto;
+        max-width: 100%;
+        display: block;
+      }
+    }
+
+    .video-wrap,
+    .vimeo-wrap {
+      max-height: var(--inner-height);
+      width: auto;
+      max-width: 100%;
+      position: relative;
+      overflow: hidden;
+
+      video {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    }
+  }
+
+  /* multi-block: 100% width, natural aspect ratio */
+  &:not(.is-solo) {
+    figure {
+      width: 100%;
+
+      img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+    }
+
+    .video-wrap,
+    .vimeo-wrap {
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+
+      video {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    }
+
+    /* portrait image: shrink figure to image width so caption aligns to edges */
+    &.is-portrait.type-image {
+      figure {
+        display: flex;
+        flex-direction: column;
+        width: fit-content;
+        max-width: 100%;
+        margin: 0 auto;
+
+        img {
+          max-height: var(--inner-height);
+          width: auto;
+          max-width: 100vw;
+        }
+      }
+    }
+  }
+
+  figcaption {
+    margin-top: var(--spacing-sm);
+  }
+
+  .vimeo-container {
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .video-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: var(--spacing-sm);
+
+    figcaption {
+      margin-top: 0;
+    }
+  }
+
+  .video-buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-base);
+    flex-shrink: 0;
+    margin-left: var(--spacing-base);
+  }
+}
+
+/*
+Carousel Block (new Svelte component)
+*/
+
+/* Solo carousel: custom, no Swiper */
+.solo-carousel {
+  height: var(--inner-height);
+  cursor: pointer;
+  overflow: hidden;
+
+  .solo-slide {
+    display: none;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+
+    &.active {
+      display: flex;
+    }
+
+    figure {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+
+      .slide-media {
+        img, video {
+          display: block;
+          max-height: calc(var(--inner-height) - 3lh);
+          max-width: 100vw;
+          width: auto;
+          height: auto;
+        }
+      }
+    }
+  }
+}
+
+/* Multi-block carousel: Swiper, aspect-ratio, cover */
+.carousel-block {
+  .swiper {
+    width: 100%;
+    cursor: pointer;
+    overflow: hidden;
+
+    .swiper-slide {
+      height: 100%;
+      overflow: hidden;
+
+      img, video {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: center;
+      }
+    }
+  }
+}
+
+/* Shared caption styles */
+.solo-carousel,
+.carousel-block {
+  .carousel-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: var(--spacing-sm);
+
+    .slide-count {
+      opacity: 0.35;
+      flex-shrink: 0;
+      margin-left: var(--spacing-base);
+    }
+  }
+}
+
+/*
+Additional Info Panel (new Svelte component)
+*/
+
+.additional-info-block {
+  height: 100svh;
+  overflow-y: scroll;
+  overscroll-behavior: none;
+
+  &::before {
+    content: "";
+    background: var(--gradient-top);
+    height: min(var(--padding-amount), 5lh);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    pointer-events: none;
+    display: block;
+  }
+
+  .return-button-container {
+    position: sticky;
+    top: calc(100svh - min(var(--padding-amount), 5lh));
+    height: min(var(--padding-amount), 5lh);
+    min-height: min(var(--padding-amount), 5lh);
+    margin-top: calc(min(var(--padding-amount), 5lh) * -1);
+    background: var(--gradient-bottom);
+    align-items: flex-end;
+
+    @media (min-width: 1024px) {
+      background: none;
+    }
+  }
+
+  .return-button {
+    z-index: 10;
+    position: relative;
+  }
+
+  & > *:first-child {
+    margin-top: calc(min(var(--padding-amount), 5lh) * -1);
+  }
+
+  .additional-info-rows {
+    display: grid;
+    grid-template-columns: max-content minmax(auto, 800px);
+    column-gap: var(--spacing-base);
+    align-items: start;
+    padding: var(--padding-amount) calc(calc(100% - var(--width-2-3)) / 2);
+    width: 100%;
+    min-height: 100%;
+    grid-auto-rows: min-content;
+
+    p {
+      max-width: fit-content;
+    }
+
+    .row-title {
+      opacity: 0.35;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    & > * {
+      padding-inline: var(--spacing-base);
+    }
+
+    .additional-info-rows {
+      grid-template-columns: auto;
+      max-width: 800px;
+      padding-inline: 0;
+
+      p.row-title:not(:first-child) {
+        margin-top: 0.25lh;
+      }
+    }
   }
 }

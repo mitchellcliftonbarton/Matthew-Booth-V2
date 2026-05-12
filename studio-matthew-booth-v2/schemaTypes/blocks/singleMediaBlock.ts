@@ -61,6 +61,14 @@ export default {
       initialValue: false,
       hidden: ({parent}: any) => parent?.mediaType === 'image',
     },
+    {
+      name: 'hasAudio',
+      type: 'boolean',
+      title: 'Has Audio',
+      description: 'Uncheck to hide the unmute button for videos with no sound.',
+      initialValue: true,
+      hidden: ({parent}: any) => parent?.mediaType === 'image',
+    },
     {name: 'caption', type: 'text', title: 'Caption', rows: 2},
   ],
   preview: {

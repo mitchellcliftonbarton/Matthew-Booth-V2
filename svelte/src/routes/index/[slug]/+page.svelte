@@ -1,22 +1,27 @@
 <script>
-  // imports
   import { page } from '$app/state';
+  import { afterNavigate, beforeNavigate } from '$app/navigation';
   import { slugify } from '$lib/utils.js';
+  import SingleMediaBlock from '$lib/components/blocks/SingleMediaBlock.svelte';
+  import CarouselBlock from '$lib/components/blocks/CarouselBlock.svelte';
+  import SoloCarousel from '$lib/components/blocks/SoloCarousel.svelte';
+  import TextBlock from '$lib/components/blocks/TextBlock.svelte';
+  import Image from '$lib/components/Image.svelte';
+  import AdditionalInfoPanel from '$lib/components/AdditionalInfoPanel.svelte';
 
-  // props
   const { data } = $props();
 
-  // data
   const entry = $derived(data.entry);
   const entriesIndex = $derived(data.entriesIndex ?? []);
   const categories = $derived(data.categories ?? []);
   const siteTitle = $derived(data.siteSettings?.siteTitle ?? 'Matthew Booth');
+  const preloadUrls = $derived(data.preloadUrls ?? []);
 
   // url params
   const categoryParam = $derived(page.url.searchParams.get('category'));
   const viewParam = $derived(page.url.searchParams.get('view'));
 
-  // filter the entries index by the active category param
+  // filter entries by active category
   const filteredEntries = $derived(
     categoryParam
       ? entriesIndex.filter((e) =>
@@ -25,22 +30,21 @@
       : entriesIndex
   );
 
-  // position of the current entry in the filtered list
   const currentIndex = $derived(
     filteredEntries.findIndex((e) => e.slug.current === entry.slug.current)
   );
 
-  const prevEntry = $derived(filteredEntries[(currentIndex - 1 + filteredEntries.length) % filteredEntries.length]);
+  const prevEntry = $derived(
+    filteredEntries[(currentIndex - 1 + filteredEntries.length) % filteredEntries.length]
+  );
   const nextEntry = $derived(filteredEntries[(currentIndex + 1) % filteredEntries.length]);
 
-  // tracker label is the active category title, or 'Entry' if no filter
   const trackerLabel = $derived(
     categoryParam
       ? (categories.find((c) => slugify(c.title) === categoryParam)?.title ?? 'Entry')
       : 'Entry'
   );
 
-  // build a url to a given pathname, preserving category and view params
   function buildUrl(pathname) {
     const params = new URLSearchParams();
     if (categoryParam) params.set('category', categoryParam);
@@ -52,59 +56,168 @@
   const closeUrl = $derived(buildUrl('/'));
   const prevUrl = $derived(prevEntry ? buildUrl(`/index/${prevEntry.slug.current}`) : '/');
   const nextUrl = $derived(nextEntry ? buildUrl(`/index/${nextEntry.slug.current}`) : '/');
+
+  // block mode detection
+  const blocks = $derived(entry.blocks ?? []);
+  const hasBlocks = $derived(blocks.length > 0);
+  const isSingleBlock = $derived(blocks.length === 1);
+  const singleBlock = $derived(isSingleBlock ? blocks[0] : null);
+
+  // fullscreen = no blocks, OR single block that is single-media or carousel
+  const isFullscreen = $derived(
+    !hasBlocks ||
+    (isSingleBlock &&
+      (singleBlock?._type === 'singleMediaBlock' || singleBlock?._type === 'carouselBlock'))
+  );
+
+  // for the no-blocks thumbnail case
+  const thumbnail = $derived(entry.featuredImage);
+  const thumbnailIsImage = $derived(thumbnail?.mediaType === 'image' && thumbnail?.image);
+  const thumbnailIsVideo = $derived(thumbnail?.mediaType === 'video' && thumbnail?.video?.asset?.url);
+
+  // info panel state
+  let infoOpen = $state(false);
+  let panelTransition = $state(true);
+
+  beforeNavigate(() => {
+    panelTransition = false;
+    infoOpen = false;
+  });
+
+  afterNavigate(() => {
+    infoOpen = false;
+    panelTransition = true;
+  });
 </script>
 
 <svelte:head>
   <title>{entry.title} — {siteTitle}</title>
+  {#each preloadUrls as url}
+    <link rel="prefetch" href={url} />
+  {/each}
 </svelte:head>
 
-<!-- fixed full-screen container sitting above everything -->
-<div id="entry-detail" class="fixed inset-0 z-[1000] bg-white">
+<div id="entry-detail" class="fixed inset-0 z-[1000] bg-white" class:info-open={infoOpen}>
 
-  <!-- header: absolute so it overlays the scroll container below -->
+  <!-- header -->
   <div class="carousel-header absolute top-0 left-0 px-base py-line flex justify-between items-start w-full pointer-events-none z-[1000]">
-    <a href={closeUrl} class="closer pointer-events-auto">{siteTitle}</a>
+    <a href={closeUrl} class="pointer-events-auto">{siteTitle}</a>
 
     <div class="carousel-controls flex items-start gap-16 select-none">
-      <!-- entry tracker: hidden on mobile -->
       {#if filteredEntries.length > 1}
         <p class="entry-tracker hidden lg:block pointer-events-auto">
-          <span class="current-category">{trackerLabel}</span>
-          <span class="entry-index"> {currentIndex + 1}</span>/<span class="entry-total">{filteredEntries.length}</span>
+          <span>{trackerLabel}</span>
+          <span> {currentIndex + 1}</span>/<span>{filteredEntries.length}</span>
         </p>
       {/if}
 
       <div class="flex items-start gap-sm">
-        <div class="prev-next flex items-center gap-sm">
-          <a href={prevUrl} class="pointer-events-auto">Previous</a>
-          <a href={nextUrl} class="pointer-events-auto">Next</a>
+        {#if filteredEntries.length > 1}
+          <div class="prev-next flex items-center gap-sm">
+            <a href={prevUrl} class="pointer-events-auto" data-sveltekit-preload-data="hover">Previous</a>
+            <a href={nextUrl} class="pointer-events-auto" data-sveltekit-preload-data="hover">Next</a>
+          </div>
+        {/if}
+
+        <a href={closeUrl} class="pointer-events-auto">Close</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- slide panels wrapper — shifts up when info is open -->
+  <!-- keyed on slug so all child components (Swiper, Vimeo) fully remount on entry change -->
+  {#key entry.slug.current}
+  <div class="slide-panels" style={panelTransition ? '' : 'transition: none;'}>
+
+    <!-- main slide -->
+    <div class="slide-item-inner relative h-dvh flex flex-col overflow-y-scroll overflow-x-hidden">
+
+      {#if isFullscreen}
+        <!-- fullscreen: single block or no-blocks thumbnail, centered, no scroll -->
+        <div class="slide-blocks flex-1 flex items-center justify-center w-full lg:w-2/3 mx-auto px-base lg:px-0">
+
+          {#if !hasBlocks}
+            <!-- no blocks: show thumbnail -->
+            {#if thumbnailIsImage}
+              <figure class="featured-image-block">
+                <Image item={thumbnail.image} loading="eager" />
+              </figure>
+            {:else if thumbnailIsVideo}
+              <figure class="featured-image-block type-video">
+                <video
+                  src={thumbnail.video.asset.url}
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                  class="media-contain"
+                ></video>
+              </figure>
+            {/if}
+
+          {:else if singleBlock?._type === 'singleMediaBlock'}
+            <SingleMediaBlock block={singleBlock} isSolo={true} eager={true} />
+
+          {:else if singleBlock?._type === 'carouselBlock'}
+            <SoloCarousel block={singleBlock} />
+          {/if}
+
         </div>
 
-        <a href={closeUrl} class="closer pointer-events-auto">Close</a>
-      </div>
-    </div>
-  </div>
+      {:else}
+        <!-- multi-block / text: scrollable, vertically centered when short -->
+        <div class="slide-blocks w-full lg:w-2/3 mx-auto px-base lg:px-0 multi-block-content">
+          {#each blocks as block, i}
+            {#if block._type === 'singleMediaBlock'}
+              <section class="block-item">
+                <SingleMediaBlock {block} isSolo={false} eager={i === 0} />
+              </section>
+            {:else if block._type === 'carouselBlock'}
+              <section class="block-item">
+                <CarouselBlock {block} />
+              </section>
+            {:else if block._type === 'textBlock'}
+              <section class="block-item">
+                <TextBlock {block} />
+              </section>
+            {/if}
+          {/each}
+        </div>
+      {/if}
 
-  <!-- scroll container: fills the full screen, scrolls internally -->
-  <div class="slide-item-inner relative h-[100dvh] flex flex-col overflow-y-scroll overflow-x-hidden">
+      <!-- footer: sticky to bottom of scroll container -->
+      {#if entry.showTitleInFooter || entry.showInformationSection}
+        <div
+          class="slide-footer sticky bottom-0 flex items-end pointer-events-none w-full px-base py-line"
+          class:justify-between={entry.showTitleInFooter}
+          class:justify-end={!entry.showTitleInFooter}
+        >
+          {#if entry.showTitleInFooter}
+            <p class="pointer-events-auto" class:italic={entry.italicizeTitle}>{entry.title}</p>
+          {/if}
 
-    <!-- main content placeholder (blocks go here) -->
-    <div class="slide-blocks w-full lg:w-2/3 mx-auto px-base lg:px-0 flex-1 flex items-center justify-center">
-      <p class={entry.italicizeTitle ? 'italic' : ''}>{entry.title}</p>
-    </div>
+          {#if entry.showInformationSection}
+            <button
+              class="info-button pointer-events-auto"
+              onclick={() => { infoOpen = true; }}
+            >Information</button>
+          {/if}
+        </div>
+      {/if}
 
-    <!-- footer: sticky to the bottom of the scroll container -->
-    {#if entry.showTitleInFooter || entry.showInformationSection}
-      <div class="slide-footer sticky bottom-0 flex items-end pointer-events-none w-full px-base py-line {entry.showTitleInFooter ? 'justify-between' : 'justify-end'}">
-        {#if entry.showTitleInFooter}
-          <p class="pointer-events-auto {entry.italicizeTitle ? 'italic' : ''}">{entry.title}</p>
-        {/if}
+    </div><!-- end slide-item-inner -->
 
-        {#if entry.showInformationSection}
-          <button class="info-button hidden pointer-events-auto">Information</button>
-        {/if}
-      </div>
+    <!-- additional info panel (stacked below, slides up via CSS) -->
+    {#if entry.showInformationSection}
+      <AdditionalInfoPanel
+        {entry}
+        isOpen={infoOpen}
+        onClose={() => { infoOpen = false; }}
+      />
     {/if}
 
-  </div>
+  </div><!-- end slide-panels -->
+  {/key}
+
 </div>

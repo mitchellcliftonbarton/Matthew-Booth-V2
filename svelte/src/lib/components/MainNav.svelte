@@ -8,8 +8,6 @@
   const siteSettings = $derived(page?.data?.siteSettings);
   const categories = $derived(page?.data?.categories ?? []);
 
-  console.log(page)
-
   // params
   const categoryParam = $derived(page.url.searchParams.get('category'));
   const viewParam = $derived(page.url.searchParams.get('view'));
@@ -41,7 +39,7 @@
     <nav class="main-links">
       <ul class="flex gap-[.3em]">
         <li>
-          <a href="/">Home</a>{#if siteSettings.navLinks.length > 0},{/if}
+          <a href="/" data-sveltekit-preload-data="hover">Home</a>{#if siteSettings.navLinks.length > 0},{/if}
         </li>
 
         {#each siteSettings.navLinks as link, i}

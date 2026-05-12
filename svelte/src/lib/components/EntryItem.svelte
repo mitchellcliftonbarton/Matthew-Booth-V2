@@ -59,11 +59,11 @@
 </script>
 
 <div class="entry-item {isActive ? 'active' : ''}" categories={categorySlugs.join(',')}>
-  <a href={entryUrl}>
+  <a href={entryUrl} data-sveltekit-preload-data="hover">
     <div class="image">
       {#if hasImage}
         <figure class="img-thumbnail aspect-square">
-          <Image imageUrl={entry.featuredImage?.image?.asset?.url} alt={entry.title} width={500} />
+          <Image item={entry.featuredImage.image} fetchWidth={500} />
         </figure>
       {:else if hasVideo}
         <figure class="img-thumbnail aspect-square">
