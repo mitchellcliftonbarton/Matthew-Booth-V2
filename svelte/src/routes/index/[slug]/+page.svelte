@@ -171,11 +171,11 @@
           {#each blocks as block, i}
             {#if block._type === 'singleMediaBlock'}
               <section class="block-item">
-                <SingleMediaBlock {block} isSolo={false} eager={i === 0} />
+                <SingleMediaBlock {block} isSolo={false} eager={i < 3} />
               </section>
             {:else if block._type === 'carouselBlock'}
               <section class="block-item">
-                <CarouselBlock {block} />
+                <CarouselBlock {block} eager={i < 3} />
               </section>
             {:else if block._type === 'textBlock'}
               <section class="block-item">

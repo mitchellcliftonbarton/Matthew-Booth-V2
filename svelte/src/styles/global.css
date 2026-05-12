@@ -39,6 +39,7 @@ Root Vars
   --underline-thickness: 1px;
   --padding-amount: max(3lh, round(nearest, 15vh, 1lh));
   --inner-height: calc(100svh - var(--padding-amount) - var(--padding-amount));
+  --inner-height-blocks: 85svh;
   --width-2-3: round(66.6667%, 1px);
 
   --gradient-top: linear-gradient(
@@ -1202,14 +1203,19 @@ Single Media Block (new Svelte component)
     }
   }
 
-  /* multi-block: 100% width, natural aspect ratio */
+  /* multi-block */
   &:not(.is-solo) {
-    figure {
-      width: 100%;
+    &.type-image figure {
+      display: flex;
+      flex-direction: column;
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 auto;
 
       img {
-        width: 100%;
-        height: auto;
+        max-height: var(--inner-height-blocks);
+        width: auto;
+        max-width: 100%;
         display: block;
       }
     }
@@ -1224,23 +1230,6 @@ Single Media Block (new Svelte component)
         width: 100%;
         height: 100%;
         display: block;
-      }
-    }
-
-    /* portrait image: shrink figure to image width so caption aligns to edges */
-    &.is-portrait.type-image {
-      figure {
-        display: flex;
-        flex-direction: column;
-        width: fit-content;
-        max-width: 100%;
-        margin: 0 auto;
-
-        img {
-          max-height: var(--inner-height);
-          width: auto;
-          max-width: 100vw;
-        }
       }
     }
   }
@@ -1321,24 +1310,25 @@ Carousel Block (new Svelte component)
   }
 }
 
-/* Multi-block carousel: Swiper, aspect-ratio, cover */
+/* Multi-block carousel */
 .carousel-block {
-  .swiper {
-    width: 100%;
-    cursor: pointer;
+  width: 100%;
+  margin: 0 auto;
+  cursor: pointer;
+
+  .carousel-slides {
+    position: relative;
     overflow: hidden;
+    width: 100%;
+  }
 
-    .swiper-slide {
-      height: 100%;
-      overflow: hidden;
+  .carousel-slide {
+    display: none;
+    position: absolute;
+    inset: 0;
 
-      img, video {
-        width: 100%;
-        height: 100%;
-        display: block;
-        object-fit: cover;
-        object-position: center;
-      }
+    &.active {
+      display: block;
     }
   }
 }
@@ -1352,10 +1342,16 @@ Carousel Block (new Svelte component)
     align-items: flex-start;
     margin-top: var(--spacing-sm);
 
-    .slide-count {
-      opacity: 0.35;
+    .carousel-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
       flex-shrink: 0;
       margin-left: var(--spacing-base);
+    }
+
+    .slide-count {
+      opacity: 0.35;
     }
   }
 }

@@ -1,10 +1,8 @@
 <script>
   import { onMount } from 'svelte';
-  import Swiper from 'swiper';
-  import 'swiper/css';
   import Image from '$lib/components/Image.svelte';
 
-  let { block } = $props();
+  let { block, eager = false } = $props();
 
   const media = $derived(
     (block.media ?? []).filter((item) =>
@@ -22,88 +20,63 @@
     return 16 / 9;
   });
 
-  let swiperEl = $state(null);
-  let swiperApi = $state(null);
-  let currentSlide = $state(0);
-
   const slideCount = $derived(media.length);
-  const currentCaption = $derived(media[currentSlide]?.caption ?? '');
+  const currentCaption = $derived(media[currentIndex]?.caption ?? '');
+
+  let currentIndex = $state(0);
+  let videoEls = $state([]);
+
+  function advance() {
+    const oldVideo = videoEls[currentIndex];
+    if (oldVideo) { oldVideo.pause(); oldVideo.currentTime = 0; }
+
+    currentIndex = (currentIndex + 1) % slideCount;
+
+    const newVideo = videoEls[currentIndex];
+    if (newVideo) { newVideo.currentTime = 0; newVideo.play().catch(() => {}); }
+  }
 
   onMount(() => {
-    if (!swiperEl) return;
-
-    swiperApi = new Swiper(swiperEl, {
-      speed: 0,
-      loop: slideCount >= 4,
-      spaceBetween: 0,
-      slidesPerView: 1,
-      allowTouchMove: false,
-    });
-
-    swiperApi.on('slideChange', () => {
-      currentSlide = swiperApi.realIndex;
-
-      const prevSlide = swiperApi.slides[swiperApi.activeIndex - 1];
-      if (prevSlide) {
-        const vid = prevSlide.querySelector('video');
-        if (vid) vid.currentTime = 0;
-      }
-
-      [swiperApi.activeIndex - 1, swiperApi.activeIndex + 1].forEach((i) => {
-        const slide = swiperApi.slides[i];
-        if (slide) slide.querySelectorAll('img').forEach((img) => img.decode().catch(() => {}));
-      });
-    });
-
-    swiperEl.addEventListener('click', () => {
-      if (swiperApi.isEnd && !swiperApi.params.loop) {
-        swiperApi.slideTo(0);
-      } else {
-        swiperApi.slideNext();
-      }
-    });
-
-    swiperEl.querySelectorAll('img').forEach((img) => img.decode().catch(() => {}));
-
-    return () => {
-      swiperApi?.destroy();
-      swiperApi = null;
-    };
+    const firstVideo = videoEls[0];
+    if (firstVideo) firstVideo.play().catch(() => {});
   });
 </script>
 
-<section class="carousel-block">
-  <div class="swiper" bind:this={swiperEl} style="aspect-ratio: {aspectRatio};">
-    <div class="swiper-wrapper">
-      {#each media as item, i}
-        <div class="swiper-slide">
-          {#if item.mediaType === 'image' && item.image}
-            <Image
-              item={item.image}
-              classes="media-cover"
-              loading={i === 0 ? 'eager' : 'lazy'}
-            />
-          {:else if item.mediaType === 'video' && item.videoUrl}
-            <video
-              src={item.videoUrl}
-              autoplay
-              muted
-              loop
-              playsinline
-              preload="metadata"
-              class="media-cover"
-            ></video>
-          {/if}
-        </div>
-      {/each}
-    </div>
+<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+<section
+  class="carousel-block"
+  style="max-width: calc(var(--inner-height-blocks) * {aspectRatio});"
+  onclick={advance}
+>
+  <div class="carousel-slides" style="aspect-ratio: {aspectRatio};">
+    {#each media as item, i}
+      <div class="carousel-slide" class:active={i === currentIndex} aria-hidden={i !== currentIndex}>
+        {#if item.mediaType === 'image' && item.image}
+          <Image
+            item={item.image}
+            classes="media-cover"
+            loading="eager"
+          />
+        {:else if item.mediaType === 'video' && item.videoUrl}
+          <video
+            src={item.videoUrl}
+            muted
+            loop
+            playsinline
+            preload="auto"
+            class="media-cover"
+            bind:this={videoEls[i]}
+          ></video>
+        {/if}
+      </div>
+    {/each}
   </div>
 
   {#if currentCaption || slideCount > 1}
     <div class="carousel-caption">
       <span>{currentCaption}</span>
       {#if slideCount > 1}
-        <span class="slide-count">{currentSlide + 1}/{slideCount}</span>
+        <span class="slide-count">{currentIndex + 1}/{slideCount}</span>
       {/if}
     </div>
   {/if}
