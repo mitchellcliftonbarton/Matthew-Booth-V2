@@ -105,7 +105,7 @@
 
     <div class="carousel-controls flex items-start gap-16 select-none">
       {#if filteredEntries.length > 1}
-        <p class="entry-tracker hidden lg:block pointer-events-auto">
+        <p class="entry-tracker pointer-events-auto">
           <span>{trackerLabel}</span>
           <span> {currentIndex + 1}</span>/<span>{filteredEntries.length}</span>
         </p>
@@ -113,7 +113,7 @@
 
       <div class="flex items-start gap-sm">
         {#if filteredEntries.length > 1}
-          <div class="prev-next flex items-center gap-sm">
+          <div class="prev-next hidden lg:flex items-center gap-sm">
             <a href={prevUrl} class="pointer-events-auto" data-sveltekit-preload-data="hover">Previous</a>
             <a href={nextUrl} class="pointer-events-auto" data-sveltekit-preload-data="hover">Next</a>
           </div>
@@ -187,22 +187,42 @@
       {/if}
 
       <!-- footer: sticky to bottom of scroll container -->
-      {#if entry.showTitleInFooter || entry.showInformationSection}
-        <div
-          class="slide-footer sticky bottom-0 flex items-end pointer-events-none w-full px-base py-line"
-          class:justify-between={entry.showTitleInFooter}
-          class:justify-end={!entry.showTitleInFooter}
-        >
-          {#if entry.showTitleInFooter}
-            <p class="pointer-events-auto" class:italic={entry.italicizeTitle}>{entry.title}</p>
-          {/if}
+      {#if entry.showTitleInFooter || entry.showInformationSection || filteredEntries.length > 1}
+        <div class="slide-footer sticky bottom-0 flex items-end justify-between pointer-events-none w-full px-base py-line">
 
-          {#if entry.showInformationSection}
-            <button
-              class="info-button pointer-events-auto"
-              onclick={() => { infoOpen = true; }}
-            >Information</button>
-          {/if}
+          <!-- left: info button on mobile, title on desktop -->
+          <div>
+            {#if entry.showInformationSection}
+              <button
+                class="info-button pointer-events-auto lg:hidden"
+                onclick={() => { infoOpen = true; }}
+              >Information</button>
+            {/if}
+            {#if entry.showTitleInFooter}
+              {#if entry.showInformationSection}
+                <p class="pointer-events-auto hidden lg:block" class:italic={entry.italicizeTitle}>{entry.title}</p>
+              {:else}
+                <p class="pointer-events-auto" class:italic={entry.italicizeTitle}>{entry.title}</p>
+              {/if}
+            {/if}
+          </div>
+
+          <!-- right: prev/next on mobile, info button on desktop -->
+          <div class="flex items-end gap-sm">
+            {#if filteredEntries.length > 1}
+              <div class="flex items-center gap-sm lg:hidden">
+                <a href={prevUrl} class="pointer-events-auto" data-sveltekit-preload-data="hover">Previous</a>
+                <a href={nextUrl} class="pointer-events-auto" data-sveltekit-preload-data="hover">Next</a>
+              </div>
+            {/if}
+            {#if entry.showInformationSection}
+              <button
+                class="info-button pointer-events-auto hidden lg:block"
+                onclick={() => { infoOpen = true; }}
+              >Information</button>
+            {/if}
+          </div>
+
         </div>
       {/if}
 
