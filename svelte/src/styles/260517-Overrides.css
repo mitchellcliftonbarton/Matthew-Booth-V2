@@ -2,7 +2,7 @@
 TO-DO: move slide-footer out of cantaining div
 TO-DO: move return-button-container out of cantaining section */
 
-#entry-detail .slide-footer, .return-button-container {
+/* #entry-detail .slide-footer, .return-button-container {
     height: 3lh;
     min-height: 3lh;
     margin-top: 0;
@@ -12,6 +12,7 @@ TO-DO: move return-button-container out of cantaining section */
     position: sticky;
     bottom: 0;
     width: 100vw;
+
     @media (width >= 64rem) {
         background: transparent;
         margin-top: -3lh;
@@ -22,72 +23,74 @@ TO-DO: move return-button-container out of cantaining section */
     position: unset;
     padding-inline: var(--spacing-base);
     justify-content: flex-start;
-}
+} */
 
-#entry-detail .slide-item-inner, .additional-info-block {
+/* #entry-detail .slide-item-inner, .additional-info-block {
     margin-top : 3lh;
     height: calc(100dvh - 6lh);
     overflow: hidden auto;
     scrollbar-color: rgba(0,0,0,0.1) transparent;
+
     @media (width >= 64rem) {
         margin-top: 0;
         height: 100dvh;
     }
 
-}
+} */
 
-#entry-detail .slide-blocks, .additional-info-block .additional-info-rows {
+/* #entry-detail .slide-blocks, .additional-info-block .additional-info-rows {
     padding: calc(var(--padding-amount) - 3lh) var(--spacing-base);
     width: 100vw;
+
     @media (width >= 64rem) {
         padding: var(--padding-amount) 0;
         width: var(--width-2-3);
     }
-}
+} */
 
 
 /* TO-DO: delete this ::before pseudo-element */
 
-.additional-info-block::before {
+/* .additional-info-block::before {
     background: none;
     height: 0;
-}
+} */
 
-.additional-info-block > :first-child {
+/* .additional-info-block > :first-child {
     margin-top: 0;
-}
+} */
 
-.carousel-header {
+/* .carousel-header {
     background: white;
     @media (width >= 64rem) {
         background: transparent;
     }
-}
+} */
 
-.carousel-controls {
+/* .carousel-controls {
     gap: 4rem;
-}
+} */
 
-.slide-footer > .flex > .flex {
+/* .slide-footer > .flex > .flex {
     gap: 2rem;
-}
+} */
 
-figcaption, .carousel-caption, .single-media-block .video-controls, .single-media-block figcaption, :is(.solo-carousel, .carousel-block) .carousel-caption {
+/* figcaption, .carousel-caption, .single-media-block .video-controls, .single-media-block figcaption, :is(.solo-carousel, .carousel-block) .carousel-caption {
     margin-top: calc(var(--spacing-sm) / 2);
-}
+} */
 
 
 
 /* fix some carousel sizing */
 
-.solo-carousel .solo-slide figure {
+/* .solo-carousel .solo-slide figure {
     max-width: 100%;
-}
+} */
 
-.solo-carousel .solo-slide figure .slide-media img, .solo-carousel .solo-slide figure .slide-media video {
+/* .solo-carousel .solo-slide figure .slide-media img, .solo-carousel .solo-slide figure .slide-media video {
     max-height: calc(var(--inner-height) - 2.5rem);
     max-width: 100%;
-}
+} */
 
 
 @media (width >= 1024px) {

@@ -18,7 +18,7 @@ Tailwind Vars
   --color-grey-1: #f7f7f7;
   --color-grey-2: #eee;
 
-  --spacing-xs: 0.4rem;
+  --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
   --spacing-base: 2rem;
   --spacing-line: 1lh;
@@ -453,479 +453,15 @@ Entries Filters
   }
 }
 
-/*
-Work Carousel
-*/
+.carousel-header {
+  background: white;
 
-work-carousel {
-  z-index: 1000;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  background-color: var(--color-white);
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-
-  .swiper {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    transition: opacity 0.3s;
+  @media (width >= 1024px) {
+    background: transparent;
   }
 
-  /* .carousel-header {
-    &::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0px;
-      width: 100%;
-      height: min(var(--padding-amount), 5lh);
-      background: linear-gradient(
-        to bottom,
-        hsl(0, 0%, 100%) 0%,
-        hsla(0, 0%, 100%, 0.987) 8.1%,
-        hsla(0, 0%, 100%, 0.951) 15.5%,
-        hsla(0, 0%, 100%, 0.896) 22.5%,
-        hsla(0, 0%, 100%, 0.825) 29%,
-        hsla(0, 0%, 100%, 0.741) 35.3%,
-        hsla(0, 0%, 100%, 0.648) 41.2%,
-        hsla(0, 0%, 100%, 0.55) 47.1%,
-        hsla(0, 0%, 100%, 0.45) 52.9%,
-        hsla(0, 0%, 100%, 0.352) 58.8%,
-        hsla(0, 0%, 100%, 0.259) 64.7%,
-        hsla(0, 0%, 100%, 0.175) 71%,
-        hsla(0, 0%, 100%, 0.104) 77.5%,
-        hsla(0, 0%, 100%, 0.049) 84.5%,
-        hsla(0, 0%, 100%, 0.013) 91.9%,
-        hsla(0, 0%, 100%, 0) 100%
-      );
-      z-index: 5;
-      pointer-events: none;
-      display: block;
-
-      @media (min-width: 1024px) {
-        display: none;
-      }
-    }
-
-    div,
-    button {
-      position: relative;
-      z-index: 10;
-    }
-  } */
-
-  .carousel-header {
-    align-items: flex-start;
-    height: 4.5lh;
-    height: min(var(--padding-amount), 5lh);
-    background: var(--gradient-top);
-    /* height: 3lh; */
-    /* background: white; */
-    transition: transform 0.5s ease;
-
-    &.info-open {
-      /* transform: translateY(calc(-100svh + 3lh)); */
-    }
-
-    @media (min-width: 1024px) {
-      background: none;
-    }
-  }
-
-  .carousel-controls,
-  .carousel-footer {
-    transition: opacity 0.3s;
-  }
-
-  /* Expanded hit targets for header/footer controls */
-  .carousel-header a,
-  .slide-footer a,
-  .slide-footer button {
-    padding: 0.5lh 0.4em;
-    margin: -0.5lh -0.4em;
-  }
-
-  .swiper-fade .swiper-slide-active {
-    pointer-events: none;
-  }
-
-  &.active {
-    pointer-events: auto;
-    opacity: 1;
-    visibility: visible;
-
-    .swiper-fade .swiper-slide-active {
-      pointer-events: auto !important;
-
-      .slide-footer p,
-      .slide-footer button {
-        pointer-events: auto !important;
-      }
-    }
-  }
-
-  &.hide-carousel-data {
-    .carousel-controls,
-    .carousel-footer,
-    .swiper {
-      opacity: 0;
-    }
-  }
-}
-
-/*
-Slide Item
-*/
-
-slide-item {
-  /* display: flex;
-  flex-direction: column;
-  min-height: 100svh; */
-  /* overflow-y: auto; */
-  overflow: hidden;
-
-  .slide-panels {
-    transition: transform 0.5s ease;
-  }
-
-  .slide-item-inner {
-    /* margin: auto;
-    padding: 15svh 0; */
-    /* min-height: 100svh; */
-    position: relative;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    overscroll-behavior: none;
-
-    .swiper {
-      height: calc(100% + 25px);
-    }
-
-    .slide-blocks {
-      margin: auto;
-      padding: var(--padding-amount) 0;
-      /* padding: 15svh 0 calc(15svh - 51px) 0; */
-      /* padding-top: 51px; */
-
-      & > section + section {
-        margin-top: 3lh;
-      }
-
-      /* &::before {
-        content: "";
-        position: sticky;
-        top: 0;
-        left: 0px;
-        width: 100vw;
-        height: min(var(--padding-amount), 5lh);
-        background: linear-gradient(
-          to bottom,
-          hsl(0, 0%, 100%) 0%,
-          hsla(0, 0%, 100%, 0.987) 8.1%,
-          hsla(0, 0%, 100%, 0.951) 15.5%,
-          hsla(0, 0%, 100%, 0.896) 22.5%,
-          hsla(0, 0%, 100%, 0.825) 29%,
-          hsla(0, 0%, 100%, 0.741) 35.3%,
-          hsla(0, 0%, 100%, 0.648) 41.2%,
-          hsla(0, 0%, 100%, 0.55) 47.1%,
-          hsla(0, 0%, 100%, 0.45) 52.9%,
-          hsla(0, 0%, 100%, 0.352) 58.8%,
-          hsla(0, 0%, 100%, 0.259) 64.7%,
-          hsla(0, 0%, 100%, 0.175) 71%,
-          hsla(0, 0%, 100%, 0.104) 77.5%,
-          hsla(0, 0%, 100%, 0.049) 84.5%,
-          hsla(0, 0%, 100%, 0.013) 91.9%,
-          hsla(0, 0%, 100%, 0) 100%
-        );
-        z-index: 5;
-        pointer-events: none;
-        display: block;
-        margin-left: calc(var(--spacing-base) * -1);
-
-        @media (min-width: 1024px) {
-          display: none;
-        }
-      } */
-
-      /* &::before {
-        background: linear-gradient(
-          to bottom,
-          hsl(0, 0%, 100%) 0%,
-          hsla(0, 0%, 100%, 0.987) 8.1%,
-          hsla(0, 0%, 100%, 0.951) 15.5%,
-          hsla(0, 0%, 100%, 0.896) 22.5%,
-          hsla(0, 0%, 100%, 0.825) 29%,
-          hsla(0, 0%, 100%, 0.741) 35.3%,
-          hsla(0, 0%, 100%, 0.648) 41.2%,
-          hsla(0, 0%, 100%, 0.55) 47.1%,
-          hsla(0, 0%, 100%, 0.45) 52.9%,
-          hsla(0, 0%, 100%, 0.352) 58.8%,
-          hsla(0, 0%, 100%, 0.259) 64.7%,
-          hsla(0, 0%, 100%, 0.175) 71%,
-          hsla(0, 0%, 100%, 0.104) 77.5%,
-          hsla(0, 0%, 100%, 0.049) 84.5%,
-          hsla(0, 0%, 100%, 0.013) 91.9%,
-          hsla(0, 0%, 100%, 0) 100%
-        );
-        height: min(var(--padding-amount), 5lh);
-        width: 100%;
-        content: "";
-        position: sticky;
-        top: 0;
-        z-index: 5;
-        pointer-events: none;
-      } */
-    }
-
-    .slide-footer {
-      position: sticky;
-      bottom: 0px;
-      left: 0px;
-      /* height: 15vh; */
-      /* min-height: 15vh; */
-      /* margin-top: -15vh; */
-      pointer-events: none;
-      z-index: 10;
-
-      align-items: flex-end;
-      /* height: 4.5lh; */
-      height: min(var(--padding-amount), 5lh);
-      min-height: min(var(--padding-amount), 5lh);
-      margin-top: calc(min(var(--padding-amount), 5lh) * -1);
-      background: var(--gradient-bottom);
-      /* height: calc(3lh + 1px);
-      min-height: calc(3lh + 1px);
-      margin-top: calc(-3lh - 1px);
-      background: white; */
-
-      p,
-      button {
-        pointer-events: auto;
-        position: relative;
-        z-index: 10;
-      }
-    }
-  }
-
-  .additional-info-block {
-    padding: 0;
-    overflow-y: scroll;
-    overscroll-behavior: none;
-    /* height: calc(100svh - 3lh); */
-
-    .return-button-container {
-      position: sticky;
-      /* top: calc(100svh - 6lh); */
-      /* height: 3lh;
-      background: white; */
-      /* margin-top: -3lh; */
-
-      align-items: flex-end;
-      /* height: 4.5lh; */
-      top: calc(100svh - min(var(--padding-amount), 5lh));
-      height: min(var(--padding-amount), 5lh);
-      min-height: min(var(--padding-amount), 5lh);
-      margin-top: calc(min(var(--padding-amount), 5lh) * -1);
-      background: var(--gradient-bottom);
-
-      @media (min-width: 1024px) {
-        background: none;
-      }
-
-      /* &::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0px;
-        width: 100vw;
-        height: min(var(--padding-amount), 5lh);
-        background: linear-gradient(
-          to top,
-          hsl(0, 0%, 100%) 0%,
-          hsla(0, 0%, 100%, 0.987) 8.1%,
-          hsla(0, 0%, 100%, 0.951) 15.5%,
-          hsla(0, 0%, 100%, 0.896) 22.5%,
-          hsla(0, 0%, 100%, 0.825) 29%,
-          hsla(0, 0%, 100%, 0.741) 35.3%,
-          hsla(0, 0%, 100%, 0.648) 41.2%,
-          hsla(0, 0%, 100%, 0.55) 47.1%,
-          hsla(0, 0%, 100%, 0.45) 52.9%,
-          hsla(0, 0%, 100%, 0.352) 58.8%,
-          hsla(0, 0%, 100%, 0.259) 64.7%,
-          hsla(0, 0%, 100%, 0.175) 71%,
-          hsla(0, 0%, 100%, 0.104) 77.5%,
-          hsla(0, 0%, 100%, 0.049) 84.5%,
-          hsla(0, 0%, 100%, 0.013) 91.9%,
-          hsla(0, 0%, 100%, 0) 100%
-        );
-        z-index: 5;
-        pointer-events: none;
-        display: block;
-
-        @media (min-width: 1024px) {
-          display: none;
-        }
-      } */
-    }
-
-    button.return-button {
-      z-index: 10;
-    }
-
-    & > *:first-child {
-      margin-top: calc(min(var(--padding-amount), 5lh) * -1);
-      /* margin-top: -3lh; */
-    }
-  }
-
-  &.info-open {
-    .slide-panels {
-      transform: translateY(-100svh);
-    }
-  }
-
-  .additional-info-rows {
-    display: grid;
-    grid-template-columns: max-content minmax(auto, 800px);
-    column-gap: var(--spacing-base);
-    align-items: start;
-    padding: var(--padding-amount) calc(calc(100% - var(--width-2-3)) / 2);
-    width: 100%;
-    min-height: 100%;
-    grid-auto-rows: min-content;
-
-    p {
-      max-width: fit-content;
-    }
-
-    .row-title {
-      opacity: 0.35;
-    }
-  }
-
-  /* .slide-footer::after {
-    background: linear-gradient(
-      to top,
-      hsl(0, 0%, 100%) 0%,
-      hsla(0, 0%, 100%, 0.987) 8.1%,
-      hsla(0, 0%, 100%, 0.951) 15.5%,
-      hsla(0, 0%, 100%, 0.896) 22.5%,
-      hsla(0, 0%, 100%, 0.825) 29%,
-      hsla(0, 0%, 100%, 0.741) 35.3%,
-      hsla(0, 0%, 100%, 0.648) 41.2%,
-      hsla(0, 0%, 100%, 0.55) 47.1%,
-      hsla(0, 0%, 100%, 0.45) 52.9%,
-      hsla(0, 0%, 100%, 0.352) 58.8%,
-      hsla(0, 0%, 100%, 0.259) 64.7%,
-      hsla(0, 0%, 100%, 0.175) 71%,
-      hsla(0, 0%, 100%, 0.104) 77.5%,
-      hsla(0, 0%, 100%, 0.049) 84.5%,
-      hsla(0, 0%, 100%, 0.013) 91.9%,
-      hsla(0, 0%, 100%, 0) 100%
-    );
-    height: min(var(--padding-amount), 5lh);
-    margin-top: calc(-1 * min(var(--padding-amount), 5lh));
-    width: 100%;
-    content: "";
-    position: absolute;
-    bottom: 0;
-    z-index: 5;
-    pointer-events: none;
-  } */
-
-  .additional-info-block::before {
-    content: "";
-    background: var(--gradient-top);
-
-    height: min(var(--padding-amount), 5lh);
-    content: "";
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    pointer-events: none;
-    display: block;
-  }
-
-  @media (max-width: 1024px) {
-    padding-inline: unset;
-
-    .slide-item-inner,
-    .additional-info-block > * {
-      padding-inline: var(--spacing-base);
-    }
-
-    .additional-info-rows {
-      grid-template-columns: auto;
-      max-width: 800px;
-    }
-
-    /* .additional-info-block::after {
-      height: min(var(--padding-amount), 5lh);
-      content: "";
-      z-index: 5;
-      pointer-events: none;
-      background: linear-gradient(
-        hsla(0, 0%, 100%, 0) 0%,
-        hsla(0, 0%, 100%, 0.013) 8.1%,
-        hsla(0, 0%, 100%, 0.049) 15.5%,
-        hsla(0, 0%, 100%, 0.104) 22.5%,
-        hsla(0, 0%, 100%, 0.175) 29%,
-        hsla(0, 0%, 100%, 0.259) 35.3%,
-        hsla(0, 0%, 100%, 0.352) 41.2%,
-        hsla(0, 0%, 100%, 0.45) 47.1%,
-        hsla(0, 0%, 100%, 0.55) 52.9%,
-        hsla(0, 0%, 100%, 0.648) 58.8%,
-        hsla(0, 0%, 100%, 0.741) 64.7%,
-        hsla(0, 0%, 100%, 0.825) 71%,
-        hsla(0, 0%, 100%, 0.896) 77.5%,
-        hsla(0, 0%, 100%, 0.951) 84.5%,
-        hsla(0, 0%, 100%, 0.987) 91.9%,
-        hsl(0, 0%, 100%) 100%
-      );
-      width: 100%;
-      position: absolute;
-      bottom: 0;
-    }
-
-    .additional-info-block::before,
-    .slide-item-inner.w-full::before {
-      height: min(var(--padding-amount), 5lh);
-      content: "";
-      z-index: 5;
-      pointer-events: none;
-      background: linear-gradient(
-        to bottom,
-        hsl(0, 0%, 100%) 0%,
-        hsla(0, 0%, 100%, 0.987) 8.1%,
-        hsla(0, 0%, 100%, 0.951) 15.5%,
-        hsla(0, 0%, 100%, 0.896) 22.5%,
-        hsla(0, 0%, 100%, 0.825) 29%,
-        hsla(0, 0%, 100%, 0.741) 35.3%,
-        hsla(0, 0%, 100%, 0.648) 41.2%,
-        hsla(0, 0%, 100%, 0.55) 47.1%,
-        hsla(0, 0%, 100%, 0.45) 52.9%,
-        hsla(0, 0%, 100%, 0.352) 58.8%,
-        hsla(0, 0%, 100%, 0.259) 64.7%,
-        hsla(0, 0%, 100%, 0.175) 71%,
-        hsla(0, 0%, 100%, 0.104) 77.5%,
-        hsla(0, 0%, 100%, 0.049) 84.5%,
-        hsla(0, 0%, 100%, 0.013) 91.9%,
-        hsla(0, 0%, 100%, 0) 100%
-      );
-      width: 100%;
-      position: absolute;
-      top: 0;
-    } */
+  .carousel-controls {
+    gap: 4rem;
   }
 }
 
@@ -1030,7 +566,7 @@ Carousel Block
     }
 
     & > * + .current-caption {
-      margin-top: var(--spacing-sm);
+      margin-top: var(--spacing-xs);
     }
   }
 
@@ -1057,18 +593,17 @@ Carousel Block
   }
 }
 
-@media (min-width: 64rem) {
+@media (min-width: 1024px) {
   .lg\:w-2\/3 {
     width: var(--width-2-3);
   }
 }
 
-@media (max-width: 1024px) {
-
+/* @media (min-width: 1024px) {
   p.row-title:not(:first-child) {
     margin-top: 0.25lh;
   }
-}
+} */
 
 /*
 Entry Detail Page
@@ -1087,24 +622,37 @@ Entry Detail Page
 
   .slide-item-inner {
     position: relative;
-    height: 100dvh;
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
-    overflow-x: hidden;
     overscroll-behavior: none;
+    margin-top : 3lh;
+    height: calc(100dvh - 6lh);
+    overflow: hidden auto;
+    scrollbar-color: rgba(0,0,0,0.1) transparent;
+    
+    @media (width >= 1024px) {
+        margin-top: 0;
+        height: 100dvh;
+    }
   }
 
   .slide-footer {
-    position: sticky;
-    bottom: 0;
     pointer-events: none;
     z-index: 10;
-    align-items: flex-end;
-    height: min(var(--padding-amount), 5lh);
-    min-height: min(var(--padding-amount), 5lh);
-    margin-top: calc(min(var(--padding-amount), 5lh) * -1);
-    background: var(--gradient-bottom);
+    height: 3lh;
+    min-height: 3lh;
+    margin-top: 0;
+    background: white;
+    padding-block: 0;
+    align-items: center;
+    position: sticky;
+    bottom: 0;
+    width: 100vw;
+
+    @media (width >= 1024px) {
+        background: transparent;
+        margin-top: -3lh;
+    }
 
     p, button {
       pointer-events: auto;
@@ -1115,7 +663,13 @@ Entry Detail Page
 
   /* fullscreen: blocks container is a flex child that grows to fill */
   .slide-blocks {
-    padding: var(--padding-amount) 0;
+    padding: calc(var(--padding-amount) - 3lh) var(--spacing-base);
+    width: 100vw;
+
+    @media (width >= 1024px) {
+      padding: var(--padding-amount) 0;
+      width: var(--width-2-3);
+    }
   }
 
   /* multi-block: margin auto in the flex column centers short content, tall content scrolls */
@@ -1261,7 +815,7 @@ Single Media Block (new Svelte component)
   }
 
   figcaption {
-    margin-top: var(--spacing-sm);
+    margin-top: var(--spacing-xs);
   }
 
   .vimeo-container {
@@ -1278,7 +832,7 @@ Single Media Block (new Svelte component)
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-top: var(--spacing-sm);
+    margin-top: var(--spacing-xs);
 
     figcaption {
       margin-top: 0;
@@ -1318,12 +872,13 @@ Carousel Block (new Svelte component)
       display: flex;
       flex-direction: column;
       margin: 0;
+      max-width: 100%;
 
       .slide-media {
         img, video {
           display: block;
-          max-height: calc(var(--inner-height) - 3lh);
-          max-width: calc(100vw - var(--spacing-base) * 2);
+          max-height: calc(var(--inner-height) - 2.5rem);
+          max-width: 100%;
           width: auto;
           height: auto;
 
@@ -1366,7 +921,7 @@ Carousel Block (new Svelte component)
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-top: var(--spacing-sm);
+    margin-top: var(--spacing-xs);
 
     .carousel-nav {
       display: flex;
@@ -1387,56 +942,48 @@ Additional Info Panel (new Svelte component)
 */
 
 .additional-info-block {
-  height: 100svh;
-  overflow-y: scroll;
   overscroll-behavior: none;
-
-  &::before {
-    content: "";
-    background: var(--gradient-top);
-    height: min(var(--padding-amount), 5lh);
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    pointer-events: none;
-    display: block;
-  }
-
-  .return-button-container {
-    position: sticky;
-    top: calc(100svh - min(var(--padding-amount), 5lh));
-    height: min(var(--padding-amount), 5lh);
-    min-height: min(var(--padding-amount), 5lh);
-    margin-top: calc(min(var(--padding-amount), 5lh) * -1);
-    background: var(--gradient-bottom);
-    align-items: flex-end;
-
-    @media (min-width: 1024px) {
-      background: none;
-    }
-  }
-
-  .return-button {
-    z-index: 10;
-    position: relative;
+  margin-top : 3lh;
+  height: calc(100dvh - 6lh);
+  overflow: hidden auto;
+  scrollbar-color: rgba(0,0,0,0.1) transparent;
+  
+  @media (width >= 1024px) {
+    margin-top: 0;
+    height: 100dvh;
   }
 
   & > *:first-child {
-    margin-top: calc(min(var(--padding-amount), 5lh) * -1);
+    margin-top: 0;
   }
 
   .additional-info-rows {
     display: grid;
-    grid-template-columns: max-content minmax(auto, 800px);
+    grid-template-columns: auto;
     column-gap: var(--spacing-base);
     align-items: start;
-    padding: var(--padding-amount) calc(calc(100% - var(--width-2-3)) / 2);
-    width: 100%;
+    padding: calc(var(--padding-amount) - 3lh) var(--spacing-base);
+    width: 100vw;
     min-height: 100%;
     grid-auto-rows: min-content;
 
+    @media (min-width: 1024px) {
+      grid-template-columns: max-content minmax(auto, 800px);
+      max-width: 800px;
+      padding: var(--padding-amount) 0;
+      width: var(--width-2-3);
+    }
+
     p {
       max-width: fit-content;
+
+      &.row-title:not(:first-child) {
+        margin-top: 0.25lh;
+
+        @media (min-width: 1024px) {
+          margin-top: 0;
+        }
+      }
     }
 
     .row-title {
@@ -1444,19 +991,33 @@ Additional Info Panel (new Svelte component)
     }
   }
 
-  @media (max-width: 1024px) {
+  @media (min-width: 1024px) {
     & > * {
       padding-inline: var(--spacing-base);
     }
-
-    .additional-info-rows {
-      grid-template-columns: auto;
-      max-width: 800px;
-      padding-inline: var(--spacing-base);
-
-      p.row-title:not(:first-child) {
-        margin-top: 0.25lh;
-      }
-    }
   }
 }
+
+.return-button-container {
+  top: calc(100svh - min(var(--padding-amount), 5lh));
+  height: 3lh;
+  min-height: 3lh;
+  margin-top: 0;
+  background: white;
+  align-items: center;
+  width: 100vw;
+  bottom: 0;
+  padding-block: 0;
+  padding-inline: var(--spacing-base);
+  justify-content: flex-start;
+
+  @media (width >= 1024px) {
+    background: transparent;
+    margin-top: -3lh;
+  }
+
+  .return-button {
+    z-index: 10;
+  }
+}
+
