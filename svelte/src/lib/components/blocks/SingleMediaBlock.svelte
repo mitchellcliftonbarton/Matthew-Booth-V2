@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import Player from '@vimeo/player';
   import Image from '$lib/components/Image.svelte';
+  import { activeAudioId } from '$lib/stores/activeAudio.js';
 
   let { block, isSolo = false, eager = false } = $props();
 
@@ -19,10 +20,35 @@
   let vimeoContainer = $state(null);
   let vimeoPlayer = $state(null);
 
+  // unique id for this block instance
+  const blockId = {};
+
   // play/pause hidden until autoplay attempt resolves
   let showPlayPause = $state(false);
   let isPaused = $state(false);
-  let isMuted = $state(true);
+  const isMuted = $derived($activeAudioId !== blockId);
+
+  // For non-autoplay native videos: claim active audio when the user hits play
+  $effect(() => {
+    if (block.mediaType !== 'video' || block.autoplay || !videoEl) return;
+    function onPlay() { activeAudioId.set(blockId); }
+    videoEl.addEventListener('play', onPlay);
+    return () => videoEl.removeEventListener('play', onPlay);
+  });
+
+  // When this block loses active status, mute autoplay videos and pause non-autoplay ones
+  $effect(() => {
+    if (block.mediaType === 'video' && videoEl) {
+      if (block.autoplay) {
+        videoEl.muted = isMuted;
+      } else if (isMuted && !videoEl.paused) {
+        videoEl.pause();
+      }
+    }
+    if (block.mediaType === 'vimeo' && vimeoPlayer) {
+      vimeoPlayer.setVolume(isMuted ? 0 : 1);
+    }
+  });
 
   onMount(() => {
     if (block.mediaType === 'vimeo' && vimeoContainer && block.vimeoUrl) {
@@ -81,13 +107,7 @@
   }
 
   function toggleMute() {
-    isMuted = !isMuted;
-    if (block.mediaType === 'video' && videoEl) {
-      videoEl.muted = isMuted;
-    }
-    if (block.mediaType === 'vimeo' && vimeoPlayer) {
-      vimeoPlayer.setVolume(isMuted ? 0 : 1);
-    }
+    activeAudioId.set(isMuted ? blockId : null);
   }
 </script>
 
@@ -117,6 +137,7 @@
           ></video>
         {:else}
           <video
+            bind:this={videoEl}
             src={block.video.asset.url}
             playsinline
             preload="metadata"

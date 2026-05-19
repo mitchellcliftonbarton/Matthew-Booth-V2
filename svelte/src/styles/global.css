@@ -1172,18 +1172,30 @@ Single Media Block (new Svelte component)
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-height: var(--inner-height);
 
     figure {
-      max-height: var(--inner-height);
-      width: auto;
+      width: 100%;
       max-width: 100%;
 
       img {
-        max-height: var(--inner-height);
-        width: auto;
+        width: 100%;
+        height: auto;
         max-width: 100%;
         display: block;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      max-height: var(--inner-height);
+
+      figure {
+        max-height: var(--inner-height);
+        width: auto;
+
+        img {
+          max-height: var(--inner-height);
+          width: auto;
+        }
       }
     }
 
@@ -1208,15 +1220,25 @@ Single Media Block (new Svelte component)
     &.type-image figure {
       display: flex;
       flex-direction: column;
-      width: fit-content;
+      width: 100%;
       max-width: 100%;
       margin: 0 auto;
 
       img {
-        max-height: var(--inner-height-blocks);
-        width: auto;
+        width: 100%;
+        height: auto;
+        max-height: 80svh;
         max-width: 100%;
         display: block;
+      }
+
+      @media (min-width: 1024px) {
+        width: fit-content;
+
+        img {
+          max-height: var(--inner-height-blocks);
+          width: auto;
+        }
       }
     }
 
