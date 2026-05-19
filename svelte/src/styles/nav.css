@@ -38,42 +38,28 @@
   .list-grid-toggle {
     overflow: hidden;
 
-    a {
-      padding: 0.2rem 0.8rem;
-      border-radius: var(--border-radius-sm);
+    span {
+      padding: 0.3rem 0.9rem;
+      border-radius: 0;
       display: inline-block;
-
-      span {
-        opacity: 0.4;
-      }
+      opacity: 0.4;
 
       &.link-active {
         background-color: var(--color-grey-2);
-
-        span {
-          opacity: 1;
-        }
+        border-radius: var(--border-radius-sm);
+        opacity: 1;
       }
     }
   }
 
-  .category-links ul a,
-  .list-grid-toggle a {
+  .category-links ul a {
     padding: 0.3rem 0.9rem;
     background-color: var(--color-grey-1);
     border-radius: var(--border-radius-sm);
   }
-
-  .list-grid-toggle a {
-    border-radius: 0;
-  }
-
-  .list-grid-toggle a.link-active {
-    border-radius: var(--border-radius-sm);
-  }
 }
 
-nav.list-grid-toggle {
+a.list-grid-toggle {
   border-radius: var(--border-radius-sm);
   background-color: var(--color-grey-1);
 }

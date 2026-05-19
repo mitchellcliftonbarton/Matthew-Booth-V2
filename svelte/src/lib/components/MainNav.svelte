@@ -12,6 +12,11 @@
   const categoryParam = $derived(page.url.searchParams.get('category'));
   const viewParam = $derived(page.url.searchParams.get('view'));
   const showFilters = $derived(page.route.id === '/');
+  const toggleUrl = $derived(
+    viewParam === 'grid'
+      ? buildUrl({ category: categoryParam, view: null })
+      : buildUrl({ category: categoryParam, view: 'grid' })
+  );
 
   // function to build link urls
   function buildUrl(newParams) {
@@ -73,21 +78,9 @@
       </ul>
     </nav>
 
-    <nav class="order-1 lg:order-2 list-grid-toggle">
-      <ul class="flex items-center flex-wrap">
-        <li>
-          <a
-            href={buildUrl({ category: categoryParam, view: null })}
-            class={viewParam === null ? 'link-active' : ''}
-          >List</a>
-        </li>
-        <li>
-          <a
-            href={buildUrl({ category: categoryParam, view: 'grid' })}
-            class={viewParam === 'grid' ? 'link-active' : ''}
-          >Grid</a>
-        </li>
-      </ul>
-    </nav>
+    <a href={toggleUrl} class="order-1 lg:order-2 list-grid-toggle flex items-center flex-wrap" data-sveltekit-preload-data="hover">
+      <span class={viewParam !== 'grid' ? 'link-active' : ''}>List</span>
+      <span class={viewParam === 'grid' ? 'link-active' : ''}>Grid</span>
+    </a>
   </div>
 </header>
