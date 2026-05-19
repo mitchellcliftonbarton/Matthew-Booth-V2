@@ -138,7 +138,7 @@
         {:else}
           <video
             bind:this={videoEl}
-            src={block.video.asset.url}
+            src="{block.video.asset.url}#t=0.1"
             playsinline
             preload="metadata"
             controls

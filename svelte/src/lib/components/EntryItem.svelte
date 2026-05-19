@@ -68,7 +68,7 @@
       {:else if hasVideo}
         <figure class="img-thumbnail aspect-square">
           <video muted preload="metadata">
-            <source src={entry.featuredImage.video.asset.url} type="video/mp4" />
+            <source src="{entry.featuredImage.video.asset.url}#t=0.1" type="video/mp4" />
           </video>
         </figure>
       {:else if isTextsCategory}
