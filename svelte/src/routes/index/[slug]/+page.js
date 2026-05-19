@@ -9,6 +9,8 @@ export async function load({ params, parent }) {
       title,
       slug,
       italicizeTitle,
+      externalAuthor,
+      externalAuthorName,
       showTitleInFooter,
       showInformationSection,
       year,

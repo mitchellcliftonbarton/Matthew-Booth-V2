@@ -35,6 +35,11 @@
       <p>{entry.year}</p>
     {/if}
 
+    {#if entry.externalAuthor && entry.externalAuthorName}
+      <p class="row-title">Author</p>
+      <p>{entry.externalAuthorName}</p>
+    {/if}
+
     {#if entry.categories?.length}
       <p class="row-title">Category</p>
       <p>{entry.categories.map((c) => c.singularTitle || c.title).join(', ')}</p>

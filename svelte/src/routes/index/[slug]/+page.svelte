@@ -41,7 +41,7 @@
 
   const trackerLabel = $derived(
     categoryParam
-      ? (categories.find((c) => slugify(c.title) === categoryParam)?.title ?? 'Entry')
+      ? (categories.find((c) => slugify(c.title) === categoryParam)?.singularTitle ?? 'Entry')
       : 'Entry'
   );
 
@@ -104,12 +104,10 @@
     <a href={closeUrl} class="pointer-events-auto">{siteTitle}</a>
 
     <div class="carousel-controls flex items-start gap-16 select-none">
-      {#if filteredEntries.length > 1}
-        <p class="entry-tracker pointer-events-auto">
-          <span>{trackerLabel}</span>
-          <span> {currentIndex + 1}</span>/<span>{filteredEntries.length}</span>
-        </p>
-      {/if}
+      <p class="entry-tracker pointer-events-auto">
+        <span>{trackerLabel}</span>
+        <span> {currentIndex + 1}</span>/<span>{filteredEntries.length}</span>
+      </p>
 
       <div class="flex items-start gap-sm">
         <a href={closeUrl} class="pointer-events-auto">Close</a>

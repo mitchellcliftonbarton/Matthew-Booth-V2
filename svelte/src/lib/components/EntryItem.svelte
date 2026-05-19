@@ -89,7 +89,7 @@
       {/if}
     </div>
 
-    <div class="title">
+    <div class="title" class:opacity-35={entry.externalAuthor}>
       <div class={entry.italicizeTitle ? 'italic' : ''}>{entry.title}</div>
     </div>
 
@@ -97,11 +97,11 @@
       <p class="opacity-[.35]">{categoryLabels}</p>
     </div>
 
-    <div class="description hidden lg:block">
+    <div class="description hidden lg:block" class:opacity-35={entry.externalAuthor}>
       <div>{descriptionText || '-'}</div>
     </div>
 
-    <div class="date flex justify-end">
+    <div class="date flex justify-end" class:opacity-35={entry.externalAuthor}>
       <p>{entry.year || '-'}</p>
     </div>
   </a>

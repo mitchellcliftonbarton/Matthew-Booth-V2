@@ -40,6 +40,12 @@ export default {
       fieldset: 'titleOptions',
     },
     {
+      name: 'externalAuthorName',
+      type: 'string',
+      title: 'External Author Name',
+      hidden: ({document}: any) => !document?.externalAuthor,
+    },
+    {
       name: 'featuredImage',
       type: 'object',
       title: 'Thumbnail Image',

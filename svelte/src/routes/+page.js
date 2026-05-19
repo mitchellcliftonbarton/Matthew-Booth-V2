@@ -10,6 +10,7 @@ export async function load() {
       title,
       slug,
       italicizeTitle,
+      externalAuthor,
       year,
       description,
       featuredImage {
