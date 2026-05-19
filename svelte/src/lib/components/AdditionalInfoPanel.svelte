@@ -67,7 +67,7 @@
     {/each}
   </div>
 
-  <div class="return-button-container bottom-0 left-0 lg:px-base py-line flex justify-end w-full">
+  <div class="return-button-container bottom-0 left-0 lg:px-base py-line flex justify-start w-full">
     <button class="return-button" onclick={handleClose}>Return</button>
   </div>
 </section>

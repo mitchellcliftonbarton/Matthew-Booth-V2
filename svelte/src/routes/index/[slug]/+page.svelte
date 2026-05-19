@@ -112,13 +112,6 @@
       {/if}
 
       <div class="flex items-start gap-sm">
-        {#if filteredEntries.length > 1}
-          <div class="prev-next hidden lg:flex items-center gap-sm">
-            <a href={prevUrl} class="pointer-events-auto" data-sveltekit-preload-data="hover">Previous</a>
-            <a href={nextUrl} class="pointer-events-auto" data-sveltekit-preload-data="hover">Next</a>
-          </div>
-        {/if}
-
         <a href={closeUrl} class="pointer-events-auto">Close</a>
       </div>
     </div>
@@ -190,36 +183,30 @@
       {#if entry.showTitleInFooter || entry.showInformationSection || filteredEntries.length > 1}
         <div class="slide-footer sticky bottom-0 flex items-end justify-between pointer-events-none w-full px-base py-line">
 
-          <!-- left: info button on mobile, title on desktop -->
+          <!-- left: info button / title -->
           <div>
             {#if entry.showInformationSection}
               <button
-                class="info-button pointer-events-auto lg:hidden"
+                class="info-button pointer-events-auto"
                 onclick={() => { infoOpen = true; }}
               >Information</button>
             {/if}
             {#if entry.showTitleInFooter}
               {#if entry.showInformationSection}
-                <p class="pointer-events-auto hidden lg:block" class:italic={entry.italicizeTitle}>{entry.title}</p>
+                <p class="pointer-events-auto hidden" class:italic={entry.italicizeTitle}>{entry.title}</p>
               {:else}
                 <p class="pointer-events-auto" class:italic={entry.italicizeTitle}>{entry.title}</p>
               {/if}
             {/if}
           </div>
 
-          <!-- right: prev/next on mobile, info button on desktop -->
+          <!-- right: prev/next -->
           <div class="flex items-end gap-sm">
             {#if filteredEntries.length > 1}
-              <div class="flex items-center gap-sm lg:hidden">
+              <div class="flex items-center gap-sm">
                 <a href={prevUrl} class="pointer-events-auto" data-sveltekit-preload-data="hover">Previous</a>
                 <a href={nextUrl} class="pointer-events-auto" data-sveltekit-preload-data="hover">Next</a>
               </div>
-            {/if}
-            {#if entry.showInformationSection}
-              <button
-                class="info-button pointer-events-auto hidden lg:block"
-                onclick={() => { infoOpen = true; }}
-              >Information</button>
             {/if}
           </div>
 
