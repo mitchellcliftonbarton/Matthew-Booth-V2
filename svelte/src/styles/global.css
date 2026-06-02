@@ -302,7 +302,7 @@ Entries Container
     align-items: center;
 
     @media (min-width: 1024px) {
-      grid-template-columns: 1fr 4fr 1fr 5fr 1fr;
+      grid-template-columns: 1fr 4fr 2fr 4fr 1fr;
     }
   }
 
@@ -455,9 +455,11 @@ Entries Filters
 
 .carousel-header {
   background: white;
+  border-bottom: 0.5px solid #666;
 
   @media (width >= 1024px) {
     background: transparent;
+    border-bottom: none;
   }
 
   .carousel-controls {
@@ -648,10 +650,12 @@ Entry Detail Page
     position: sticky;
     bottom: 0;
     width: 100vw;
+    border-top: 0.5px solid #666;
 
     @media (width >= 1024px) {
         background: transparent;
         margin-top: -3lh;
+        border-top: none;
     }
 
     p, button {
@@ -675,7 +679,6 @@ Entry Detail Page
   /* multi-block: margin auto in the flex column centers short content, tall content scrolls */
   .multi-block-content {
     margin-block: auto;
-    padding: var(--padding-amount) 0;
 
     & > section + section {
       margin-top: 3lh;
@@ -726,28 +729,27 @@ Single Media Block (new Svelte component)
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-height: var(--inner-height);
 
     figure {
-      width: 100%;
+      width: fit-content;
       max-width: 100%;
+      max-height: var(--inner-height);
 
       img {
-        width: 100%;
+        width: auto;
         height: auto;
         max-width: 100%;
         display: block;
+        max-height: var(--inner-height);
       }
     }
 
     @media (min-width: 1024px) {
-      max-height: var(--inner-height);
-
       figure {
-        max-height: var(--inner-height);
         width: auto;
 
         img {
-          max-height: var(--inner-height);
           width: auto;
         }
       }
@@ -778,12 +780,12 @@ Single Media Block (new Svelte component)
     &.type-image figure {
       display: flex;
       flex-direction: column;
-      width: 100%;
+      width: fit-content;
       max-width: 100%;
       margin: 0 auto;
 
       img {
-        width: 100%;
+        width: auto;
         height: auto;
         max-height: 80svh;
         max-width: 100%;
@@ -791,11 +793,8 @@ Single Media Block (new Svelte component)
       }
 
       @media (min-width: 1024px) {
-        width: fit-content;
-
         img {
           max-height: var(--inner-height-blocks);
-          width: auto;
         }
       }
     }
@@ -962,7 +961,7 @@ Additional Info Panel (new Svelte component)
     grid-template-columns: auto;
     column-gap: var(--spacing-base);
     align-items: start;
-    padding: calc(var(--padding-amount) - 3lh) var(--spacing-base);
+    padding: var(--padding-amount) var(--spacing-base);
     width: 100vw;
     min-height: 100%;
     grid-auto-rows: min-content;

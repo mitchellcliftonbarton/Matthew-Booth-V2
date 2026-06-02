@@ -11,14 +11,20 @@
   {#if block.years?.length}
     <div>
       {#each block.years as item}
-        <div class="grid grid-cols-6 gap-sm">
+        <div class="grid year-row gap-sm">
           {#if item.year}
-            <span class="col-span-1">{item.year}</span>
+            <span>{item.year}</span>
           {/if}
           
-          <div class="col-span-5 rich-text"><Portable value={item.text} /></div>
+          <div class="rich-text"><Portable value={item.text} /></div>
         </div>
       {/each}
     </div>
   {/if}
 </div>
+
+<style>
+  .year-row {
+    grid-template-columns: minmax(10ch, 1fr) 5fr;
+  }
+</style>

@@ -19,17 +19,11 @@
     ul {
       a {
         display: inline-block;
-
-        span {
-          opacity: 0.4;
-        }
+        color: rgba(0,0,0,0.4);
 
         &.link-active {
           background-color: var(--color-grey-2);
-
-          span {
-            opacity: 1;
-          }
+          color: rgba(0,0,0,1);
         }
       }
     }
