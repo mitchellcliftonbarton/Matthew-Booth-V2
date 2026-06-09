@@ -4,34 +4,37 @@ import {useEffect, useState} from 'react'
 import type {ArrayOfObjectsInputProps} from 'sanity'
 import {set, unset, useClient, useFormValue} from 'sanity'
 
-const CATEGORY_PRESETS: Record<string, {title: string}[]> = {
-  Work: [
+const CATEGORY_PRESETS: Record<string, {title: string; text?: string}[]> = {
+  Works: [
     {title: 'Medium'},
     {title: 'Dimensions'},
     {title: 'Edition'},
     {title: 'Exhibitions'},
     {title: 'Notes'},
   ],
-  Note: [
+  Notes: [
     {title: 'Medium'},
     {title: 'Dimensions'},
     {title: 'Notes'},
   ],
-  Exhibition: [
+  Exhibitions: [
     {title: 'Dates'},
-    {title: 'Type'},
+    {title: 'Type', text: 'Solo / Group'},
     {title: 'Location'},
+    {title: 'Text'},
+    {title: 'Artworks'},
     {title: 'Notes'},
   ],
-  Commission: [
+  Commissions: [
     {title: 'Client'},
     {title: 'Collaborators'},
     {title: 'Notes'},
   ],
-  Text: [
+  Texts: [
+    {title: 'Related'},
     {title: 'Notes'},
   ],
-  Publication: [
+  Publications: [
     {title: 'Publisher'},
     {title: 'Details'},
     {title: 'Notes'},
@@ -62,13 +65,23 @@ export function AdditionalInfoInput(props: ArrayOfObjectsInputProps) {
     categoryTitles.some((t) => t.toLowerCase() === name.toLowerCase()),
   )
 
-  const handlePreset = (items: {title: string}[]) => {
+  const handlePreset = (items: {title: string; text?: string}[]) => {
     const current = props.value ?? []
     const newItems = items.map((item) => ({
       _type: 'additionalInfoItem',
       _key: randomKey(),
       title: item.title,
-      text: [],
+      text: item.text
+        ? [
+            {
+              _type: 'block',
+              _key: randomKey(),
+              style: 'normal',
+              markDefs: [],
+              children: [{_type: 'span', _key: randomKey(), text: item.text, marks: []}],
+            },
+          ]
+        : [],
     }))
     props.onChange(set([...current, ...newItems]))
   }
@@ -79,7 +92,7 @@ export function AdditionalInfoInput(props: ArrayOfObjectsInputProps) {
         {visiblePresets.map(([name, items]) => (
           <Button
             key={name}
-            text={`Add ${name} defaults`}
+            text={`Add ${name.replace(/s$/, '')} defaults`}
             tone="primary"
             mode="ghost"
             icon={AddIcon}

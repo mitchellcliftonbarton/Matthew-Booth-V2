@@ -132,9 +132,11 @@ export default {
             },
           ],
           preview: {
-            select: {title: 'title'},
-            prepare({title}: any) {
-              return {title: title || 'Info Item'}
+            select: {title: 'title', text: 'text'},
+            prepare({title, text}: any) {
+              const firstBlock = text?.find((b: any) => b._type === 'block')
+              const subtitle = firstBlock?.children?.map((c: any) => c.text).join('') || ''
+              return {title: title || 'Info Item', subtitle}
             },
           },
         },
