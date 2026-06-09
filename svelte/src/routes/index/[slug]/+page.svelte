@@ -6,7 +6,6 @@
   import CarouselBlock from '$lib/components/blocks/CarouselBlock.svelte';
   import SoloCarousel from '$lib/components/blocks/SoloCarousel.svelte';
   import TextBlock from '$lib/components/blocks/TextBlock.svelte';
-  import Image from '$lib/components/Image.svelte';
   import AdditionalInfoPanel from '$lib/components/AdditionalInfoPanel.svelte';
 
   const { data } = $props();
@@ -63,17 +62,20 @@
   const isSingleBlock = $derived(blocks.length === 1);
   const singleBlock = $derived(isSingleBlock ? blocks[0] : null);
 
-  // fullscreen = no blocks, OR single block that is single-media or carousel
+  // fullscreen = single block that is single-media or carousel
   const isFullscreen = $derived(
-    !hasBlocks ||
-    (isSingleBlock &&
-      (singleBlock?._type === 'singleMediaBlock' || singleBlock?._type === 'carouselBlock'))
+    isSingleBlock &&
+    (singleBlock?._type === 'singleMediaBlock' || singleBlock?._type === 'carouselBlock')
   );
 
-  // for the no-blocks thumbnail case
-  const thumbnail = $derived(entry.featuredImage);
-  const thumbnailIsImage = $derived(thumbnail?.mediaType === 'image' && thumbnail?.image);
-  const thumbnailIsVideo = $derived(thumbnail?.mediaType === 'video' && thumbnail?.video?.asset?.url);
+  // OG image: custom thumbnail if set, otherwise first image block
+  const ogImageUrl = $derived((() => {
+    if (entry.useCustomThumbnail && entry.customThumbnail?.mediaType === 'image') return entry.customThumbnail?.image?.asset?.url ?? null;
+    const b = blocks[0];
+    if (b?._type === 'singleMediaBlock' && b.mediaType === 'image') return b.image?.asset?.url ?? null;
+    if (b?._type === 'carouselBlock') return b.media?.[0]?.image?.asset?.url ?? null;
+    return null;
+  })());
 
   // info panel state
   let infoOpen = $state(false);
@@ -92,6 +94,9 @@
 
 <svelte:head>
   <title>{entry.title} — {siteTitle}</title>
+  {#if ogImageUrl}
+    <meta property="og:image" content={ogImageUrl} />
+  {/if}
   {#each preloadUrls as url}
     <link rel="prefetch" href={url} />
   {/each}
@@ -124,30 +129,10 @@
     <div class="slide-item-inner relative h-dvh flex flex-col overflow-y-scroll overflow-x-hidden">
 
       {#if isFullscreen}
-        <!-- fullscreen: single block or no-blocks thumbnail, centered, no scroll -->
+        <!-- fullscreen: single block, centered, no scroll -->
         <div class="slide-blocks flex-1 flex items-center justify-center w-full lg:w-2/3 mx-auto px-base lg:px-0">
 
-          {#if !hasBlocks}
-            <!-- no blocks: show thumbnail -->
-            {#if thumbnailIsImage}
-              <figure class="featured-image-block">
-                <Image item={thumbnail.image} loading="eager" />
-              </figure>
-            {:else if thumbnailIsVideo}
-              <figure class="featured-image-block type-video">
-                <video
-                  src={thumbnail.video.asset.url}
-                  autoplay
-                  muted
-                  loop
-                  playsinline
-                  preload="metadata"
-                  class="media-contain"
-                ></video>
-              </figure>
-            {/if}
-
-          {:else if singleBlock?._type === 'singleMediaBlock'}
+          {#if singleBlock?._type === 'singleMediaBlock'}
             <SingleMediaBlock block={singleBlock} isSolo={true} eager={true} />
 
           {:else if singleBlock?._type === 'carouselBlock'}

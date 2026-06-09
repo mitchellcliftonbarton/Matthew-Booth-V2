@@ -15,9 +15,10 @@ export async function load({ params, parent }) {
       showInformationSection,
       year,
       categories[]->{ title, singularTitle },
-      featuredImage {
+      useCustomThumbnail,
+      customThumbnail {
         mediaType,
-        image { ..., asset->{ _id, url, metadata { dimensions } } },
+        image { asset->{ _id, url, metadata { dimensions } } },
         video { asset->{ url } }
       },
       blocks[] {
@@ -65,7 +66,8 @@ export async function load({ params, parent }) {
     ? await client.fetch(
         `*[_type == "entry" && slug.current in $slugs]{
           slug,
-          featuredImage {
+          useCustomThumbnail,
+          customThumbnail {
             mediaType,
             image { asset->{ _id } }
           },
@@ -81,15 +83,17 @@ export async function load({ params, parent }) {
     : [];
 
   const preloadUrls = adjacentImages.flatMap((e) => {
-    const firstBlock = e.blocks ?? null;
     let asset = null;
 
-    if (!firstBlock) {
-      if (e.featuredImage?.mediaType === 'image') asset = e.featuredImage?.image?.asset;
-    } else if (firstBlock._type === 'singleMediaBlock' && firstBlock.mediaType === 'image') {
-      asset = firstBlock.image?.asset;
-    } else if (firstBlock._type === 'carouselBlock') {
-      asset = firstBlock.media?.image?.asset;
+    if (e.useCustomThumbnail && e.customThumbnail?.mediaType === 'image') {
+      asset = e.customThumbnail?.image?.asset;
+    } else {
+      const firstBlock = e.blocks ?? null;
+      if (firstBlock?._type === 'singleMediaBlock' && firstBlock.mediaType === 'image') {
+        asset = firstBlock.image?.asset;
+      } else if (firstBlock?._type === 'carouselBlock') {
+        asset = firstBlock.media?.image?.asset;
+      }
     }
 
     if (!asset?._id) return [];

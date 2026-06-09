@@ -53,9 +53,18 @@
     buildUrl({ category: categoryParam, view: viewParam }).replace('/', `/index/${entry.slug.current}`)
   );
 
-  // featured media type flags
-  const hasImage = $derived(entry.featuredImage?.mediaType === 'image' && !!entry.featuredImage?.image?.asset?.url);
-  const hasVideo = $derived(entry.featuredImage?.mediaType === 'video' && entry.featuredImage?.video?.asset?.url);
+  // resolve thumbnail: custom override or auto-derived from first block
+  const thumbnail = $derived((() => {
+    if (entry.useCustomThumbnail && entry.customThumbnail) return entry.customThumbnail;
+    const b = entry.firstBlock;
+    if (!b) return null;
+    if (b._type === 'singleMediaBlock') return { mediaType: b.mediaType, image: b.image, video: { asset: { url: b.video?.asset?.url ?? null } } };
+    if (b._type === 'carouselBlock' && b.firstMedia) return { mediaType: b.firstMedia.mediaType, image: b.firstMedia.image, video: { asset: { url: b.firstMedia.videoUrl ?? null } } };
+    return null;
+  })());
+
+  const hasImage = $derived(thumbnail?.mediaType === 'image' && !!thumbnail?.image?.asset?.url);
+  const hasVideo = $derived(thumbnail?.mediaType === 'video' && !!thumbnail?.video?.asset?.url);
 </script>
 
 <div class="entry-item {isActive ? 'active' : ''}" categories={categorySlugs.join(',')}>
@@ -63,12 +72,12 @@
     <div class="image">
       {#if hasImage}
         <figure class="img-thumbnail aspect-square">
-          <Image item={entry.featuredImage.image} fetchWidth={500} />
+          <Image item={thumbnail.image} fetchWidth={500} />
         </figure>
       {:else if hasVideo}
         <figure class="img-thumbnail aspect-square">
           <video muted preload="metadata">
-            <source src="{entry.featuredImage.video.asset.url}#t=0.1" type="video/mp4" />
+            <source src="{thumbnail.video.asset.url}#t=0.1" type="video/mp4" />
           </video>
         </figure>
       {:else if isTextsCategory}

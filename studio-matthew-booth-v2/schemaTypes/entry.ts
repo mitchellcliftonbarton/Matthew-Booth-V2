@@ -50,10 +50,17 @@ export default {
       components: {input: ReferenceCheckboxes},
     },
     {
-      name: 'featuredImage',
+      name: 'useCustomThumbnail',
+      type: 'boolean',
+      title: 'Use Custom Thumbnail',
+      description: 'Override the auto-derived thumbnail (taken from the first block) with a custom image or video.',
+      initialValue: false,
+    },
+    {
+      name: 'customThumbnail',
       type: 'object',
-      title: 'Primary Image',
-      description: 'The primary image or video for the entry.',
+      title: 'Custom Thumbnail',
+      hidden: ({document}: any) => !document?.useCustomThumbnail,
       fields: [
         {
           name: 'mediaType',
