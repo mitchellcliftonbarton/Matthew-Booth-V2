@@ -629,9 +629,10 @@ Entry Detail Page
     overscroll-behavior: none;
     margin-top : 3lh;
     height: calc(100dvh - 6lh);
+    padding-bottom: 3lh;
     overflow: hidden auto;
     scrollbar-color: rgba(0,0,0,0.1) transparent;
-    
+
     @media (width >= 1024px) {
         margin-top: 0;
         height: 100dvh;
@@ -643,18 +644,16 @@ Entry Detail Page
     z-index: 10;
     height: 3lh;
     min-height: 3lh;
-    margin-top: 0;
     background: white;
     padding-block: 0;
     align-items: center;
-    position: sticky;
+    position: fixed;
     bottom: 0;
     width: 100vw;
     border-top: 0.5px solid #666;
 
     @media (width >= 1024px) {
         background: transparent;
-        margin-top: -3lh;
         border-top: none;
     }
 
