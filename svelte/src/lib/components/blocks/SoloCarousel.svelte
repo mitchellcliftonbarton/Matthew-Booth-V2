@@ -43,11 +43,11 @@
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
-<section class="solo-carousel" bind:this={containerEl} onclick={advance}>
+<section class="solo-carousel" bind:this={containerEl}>
   {#each media as item, i}
     <div class="solo-slide" class:active={i === currentIndex} aria-hidden={i !== currentIndex}>
       <figure>
-        <div class="slide-media">
+        <div class="slide-media" onclick={advance}>
           {#if item.mediaType === 'image' && item.image}
             <Image
               item={item.image}

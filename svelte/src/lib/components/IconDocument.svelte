@@ -1,12 +1,13 @@
-<svg class="icon-document" viewBox="0 0 19 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0.25 25.25V0.25H13.25L18.25 5.25V25.25H0.25Z" fill="white"/>
-<path d="M13.25 0.25L18.25 5.25V25.25H0.25V0.25H13.25ZM18.25 5.25H13.25V0.25" stroke="black" stroke-width="0.5"/>
-<path d="M2.75 5.25H10.75M2.75 10.25H15.75M2.75 15.25H15.75M2.75 20.25H15.75" stroke="black" stroke-width="0.5"/>
+<svg class="icon-document" width="36" height="50" viewBox="0 0 36 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M25.5 0.503418V10.5034H35.5V49.5034H0.5V0.503418H25.5Z" fill="white" stroke="black"/>
+  <path d="M6 10.5034H20.7692M6 20.5034H30M6 30.5034H30M6 40.5034H30" stroke="black"/>
+  <path d="M25.6499 0.353516L35.6499 10.3535" stroke="black"/>
 </svg>
 
 <style>
-  path {
-    stroke-width: 1;
+  svg {
+    display: block;
+    margin: 0 auto;
     opacity: 0.65;
   }
 </style>
