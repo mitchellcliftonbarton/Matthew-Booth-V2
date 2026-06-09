@@ -18,7 +18,7 @@
 
 	// handle navigation
 	beforeNavigate(() => {
-		loadingTimeout = setTimeout(() => NProgress.start(), 200);
+		loadingTimeout = setTimeout(() => NProgress.start(), 500);
 	});
 
 	afterNavigate(() => {

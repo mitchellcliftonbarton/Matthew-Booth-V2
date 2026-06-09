@@ -105,12 +105,12 @@ body {
 
   #nprogress .bar {
 		height: 2px;
-		background-color: var(--color-grey-1);
-
-		@media (min-width: 1024px) {
-			height: 4px;
-		}
+		background-color: var(--color-black);
 	}
+
+  #nprogress .peg {
+    display: none;
+  }
 }
 
 hr {

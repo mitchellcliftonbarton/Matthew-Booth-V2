@@ -1,6 +1,6 @@
 <script>
   import { page } from '$app/state';
-  import { afterNavigate, beforeNavigate } from '$app/navigation';
+  import { afterNavigate, beforeNavigate, goto } from '$app/navigation';
   import { slugify } from '$lib/utils.js';
   import SingleMediaBlock from '$lib/components/blocks/SingleMediaBlock.svelte';
   import CarouselBlock from '$lib/components/blocks/CarouselBlock.svelte';
@@ -90,7 +90,18 @@
     infoOpen = false;
     panelTransition = true;
   });
+
+  function handleKeydown(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+    if (e.key === 'ArrowLeft') goto(prevUrl);
+    else if (e.key === 'ArrowRight') goto(nextUrl);
+    else if (e.key === 'Escape') goto(closeUrl);
+    else if (e.key === 'ArrowDown' && !infoOpen && entry.showInformationSection) infoOpen = true;
+    else if (e.key === 'ArrowUp' && infoOpen) infoOpen = false;
+  }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <svelte:head>
   <title>{entry.title} — {siteTitle}</title>
