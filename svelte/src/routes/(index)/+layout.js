@@ -1,9 +1,6 @@
 import { client } from '$lib/sanity/client.js';
 
 export async function load() {
-  // fetch all entries ordered by creation date
-  // categories are dereferenced to get full title/singularTitle objects
-  // firstTextBlock is used as a text preview for entries in the Texts category with no featured image
   const entries = await client.fetch(`
     *[_type == "entry"] | order(orderRank asc) {
       _id,

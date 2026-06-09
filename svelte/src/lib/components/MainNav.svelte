@@ -11,7 +11,7 @@
   // params
   const categoryParam = $derived(page.url.searchParams.get('category'));
   const viewParam = $derived(page.url.searchParams.get('view'));
-  const showFilters = $derived(page.route.id === '/');
+  const showFilters = $derived(page.route.id === '/(index)' || page.route.id === '/(index)/index/[slug]');
   const toggleUrl = $derived(
     viewParam === 'grid'
       ? buildUrl({ category: categoryParam, view: null })

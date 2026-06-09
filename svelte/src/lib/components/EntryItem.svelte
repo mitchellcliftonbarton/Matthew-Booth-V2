@@ -35,23 +35,14 @@
   // plain text version of description for list display
   const descriptionText = $derived(toPlainText(entry.description ?? []));
 
-  // builds a url preserving existing params, merging in any overrides
-  function buildUrl(newParams) {
-    const url = new URL(page.url);
-    for (const [key, value] of Object.entries(newParams)) {
-      if (value === null || value === undefined) {
-        url.searchParams.delete(key);
-      } else {
-        url.searchParams.set(key, value);
-      }
-    }
-    return url.pathname + (url.search || '');
-  }
-
   // entry url preserves the active category and view params
-  const entryUrl = $derived(
-    buildUrl({ category: categoryParam, view: viewParam }).replace('/', `/index/${entry.slug.current}`)
-  );
+  const entryUrl = $derived((() => {
+    const params = new URLSearchParams();
+    if (categoryParam) params.set('category', categoryParam);
+    if (viewParam) params.set('view', viewParam);
+    const search = params.toString();
+    return `/index/${entry.slug.current}` + (search ? `?${search}` : '');
+  })());
 
   // resolve thumbnail: custom override or auto-derived from first block
   const thumbnail = $derived((() => {
