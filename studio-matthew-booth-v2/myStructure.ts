@@ -11,5 +11,5 @@ export const myStructure = (S: any, context: any) =>
         .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
       orderableDocumentListDeskItem({S, context, type: 'entry', title: 'Entries', icon: DocumentsIcon}),
       S.documentTypeListItem('page').title('Pages').icon(DocumentIcon),
-      S.documentTypeListItem('category').title('Categories').icon(TagIcon),
+      orderableDocumentListDeskItem({S, context, type: 'category', title: 'Categories', icon: TagIcon}),
     ])

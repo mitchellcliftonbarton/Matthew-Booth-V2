@@ -52,8 +52,8 @@ export default {
     {
       name: 'featuredImage',
       type: 'object',
-      title: 'Thumbnail Image',
-      description: 'The main image or video for the entry.',
+      title: 'Primary Image',
+      description: 'The primary image or video for the entry.',
       fields: [
         {
           name: 'mediaType',
