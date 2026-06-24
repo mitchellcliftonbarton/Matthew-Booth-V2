@@ -8,6 +8,6 @@
   svg {
     display: block;
     margin: 0 auto;
-    opacity: 0.65;
+    opacity: 1;
   }
 </style>

@@ -1,7 +1,7 @@
 <script>
   import { page } from '$app/state';
-  import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
-  import { setContext } from 'svelte';
+  import { goto, beforeNavigate, afterNavigate, preloadData } from '$app/navigation';
+  import { setContext, tick } from 'svelte';
   import { slugify } from '$lib/utils.js';
   import EntryItem from '$lib/components/EntryItem.svelte';
   import AdditionalInfoPanel from '$lib/components/AdditionalInfoPanel.svelte';
@@ -57,6 +57,14 @@
   const prevUrl = $derived(prevEntry ? buildUrl(`/index/${prevEntry.slug.current}`) : closeUrl);
   const nextUrl = $derived(nextEntry ? buildUrl(`/index/${nextEntry.slug.current}`) : closeUrl);
 
+  // Preload the adjacent entries' data on every detail page load so Prev/Next
+  // and arrow-key navigation swap in instantly (no load gap = no visible jump).
+  $effect(() => {
+    if (!isDetailOpen || filteredEntries.length <= 1) return;
+    preloadData(prevUrl);
+    preloadData(nextUrl);
+  });
+
   // info panel state — shared with detail page via context
   let infoOpen = $state(false);
   let panelTransition = $state(true);
@@ -76,17 +84,29 @@
   let savedScrollY = 0;
 
   beforeNavigate(({ from, to }) => {
-    if (to?.route?.id === '/(index)/index/[slug]' && from?.route?.id !== '/(index)/index/[slug]') {
+    const fromDetail = from?.route?.id === '/(index)/index/[slug]';
+    const toDetail = to?.route?.id === '/(index)/index/[slug]';
+
+    if (toDetail && !fromDetail) {
       savedScrollY = window.scrollY;
     }
+
+    // Collapse the info panel and kill the slide animation *before* the next
+    // entry mounts, so the incoming (freshly-keyed) panel renders at the top
+    // with no transition to animate. Because the neighbours are preloaded, the
+    // navigation resolves in the same paint — the outgoing entry isn't seen
+    // snapping, and the new one simply appears at the top.
     panelTransition = false;
     infoOpen = false;
   });
 
-  afterNavigate(({ from }) => {
+  afterNavigate(async ({ from }) => {
     if (from?.route?.id === '/(index)/index/[slug]') {
       window.scrollTo({ top: savedScrollY, behavior: 'instant' });
     }
+    // New entry is mounted at the top; re-enable the animation a tick later so
+    // subsequent user toggles of the info panel slide as expected.
+    await tick();
     panelTransition = true;
   });
 

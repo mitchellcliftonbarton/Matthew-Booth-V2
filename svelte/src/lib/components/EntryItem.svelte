@@ -58,7 +58,7 @@
   const hasVideo = $derived(thumbnail?.mediaType === 'video' && !!thumbnail?.video?.asset?.url);
 </script>
 
-<div class="entry-item {isActive ? 'active' : ''}" categories={categorySlugs.join(',')}>
+<div class="entry-item {isActive ? 'active' : ''} {entry.externalAuthor ? 'external-author' : ''}" categories={categorySlugs.join(',')}>
   <a href={entryUrl} data-sveltekit-preload-data="hover">
     <div class="image">
       {#if hasImage}
@@ -89,7 +89,7 @@
       {/if}
     </div>
 
-    <div class="title" class:opacity-35={entry.externalAuthor}>
+    <div class="title">
       <div class={entry.italicizeTitle ? 'italic' : ''}>{entry.title}</div>
     </div>
 
@@ -97,11 +97,11 @@
       <p class="opacity-[.35]">{categoryLabels}</p>
     </div>
 
-    <div class="description hidden lg:block" class:opacity-35={entry.externalAuthor}>
+    <div class="description hidden lg:block">
       <div>{descriptionText || '-'}</div>
     </div>
 
-    <div class="date flex justify-end" class:opacity-35={entry.externalAuthor}>
+    <div class="date flex justify-end">
       <p>{entry.year || '-'}</p>
     </div>
   </a>

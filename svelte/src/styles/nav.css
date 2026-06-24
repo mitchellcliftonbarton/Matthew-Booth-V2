@@ -47,7 +47,7 @@
   }
 
   .category-links ul a {
-    padding: 0.3rem 0.9rem;
+    padding: 0.2rem 1rem;
     background-color: var(--color-grey-1);
     border-radius: var(--border-radius-sm);
   }

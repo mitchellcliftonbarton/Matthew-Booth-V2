@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "svelte-dev",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd svelte && exec /Users/MCB/.nvm/versions/node/v22.15.0/bin/node node_modules/vite/bin/vite.js dev --port 5188"],
+      "port": 5188,
+      "autoPort": false
+    }
+  ]
+}

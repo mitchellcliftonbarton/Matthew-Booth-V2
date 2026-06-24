@@ -257,7 +257,6 @@ Entry Item
       width: 35px;
       height: 25px;
       aspect-ratio: unset;
-      opacity: 0.65;
     }
 
     .text-preview {
@@ -453,7 +452,7 @@ Entries Filters
 }
 
 .carousel-header {
-  background: #eeedec;
+  background: var(--color-grey-1);
   border-bottom: 0.5px solid #666;
 
   @media (width >= 1024px) {
@@ -628,7 +627,7 @@ Entry Detail Page
     overscroll-behavior: none;
     margin-top : 3lh;
     height: calc(100dvh - 6lh);
-    padding-bottom: 3lh;
+
     overflow: hidden auto;
     scrollbar-color: rgba(0,0,0,0.1) transparent;
 
@@ -643,7 +642,7 @@ Entry Detail Page
     z-index: 10;
     height: 3lh;
     min-height: 3lh;
-    background: #eeedec;
+    background: var(--color-grey-1);
     padding-block: 0;
     align-items: center;
     position: fixed;
@@ -830,6 +829,7 @@ Single Media Block (new Svelte component)
     justify-content: space-between;
     align-items: flex-start;
     margin-top: var(--spacing-xs);
+    height: 20px;
 
     figcaption {
       margin-top: 0;
