@@ -19,11 +19,10 @@
     ul {
       a {
         display: inline-block;
-        color: rgba(0,0,0,0.4);
+        color: var(--color-accent);
 
         &.link-active {
-          background-color: var(--color-grey-2);
-          color: rgba(0,0,0,1);
+          color: var(--color-black);
         }
       }
     }
@@ -44,12 +43,6 @@
         opacity: 1;
       }
     }
-  }
-
-  .category-links ul a {
-    padding: 0.2rem 1rem;
-    background-color: var(--color-grey-1);
-    border-radius: var(--border-radius-sm);
   }
 }
 

@@ -56,9 +56,21 @@
     </nav>
   {/if}
 
-  <div id="entries-filters" class={showFilters ? 'active' : ''}>
-    <nav class="order-2 lg:order-1 category-links">
-      <ul class="flex items-center flex-wrap gap-xs">
+  <div id="entries-filters" class="space-y-line" class:active={showFilters}>
+    <nav>
+      <ul class="flex gap-sm-plus">
+        <li>
+          <a href={buildUrl({ view: null })} class={viewParam !== 'grid' ? '' : 'text-accent'}>List</a>
+        </li>
+
+        <li>
+          <a href={buildUrl({ view: 'grid' })} class={viewParam === 'grid' ? '' : 'text-accent'}>Grid</a>
+        </li>
+      </ul>
+    </nav>
+
+    <nav class="category-links">
+      <ul class="flex items-center flex-wrap gap-sm-plus">
         <li>
           <a
             href={buildUrl({ category: null, view: viewParam })}
@@ -77,10 +89,5 @@
         {/each}
       </ul>
     </nav>
-
-    <a href={toggleUrl} class="order-1 lg:order-2 list-grid-toggle flex items-center flex-wrap" data-sveltekit-preload-data="hover">
-      <span class={viewParam !== 'grid' ? 'link-active' : ''}>List</span>
-      <span class={viewParam === 'grid' ? 'link-active' : ''}>Grid</span>
-    </a>
   </div>
 </header>

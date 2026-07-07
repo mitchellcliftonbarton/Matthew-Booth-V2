@@ -89,20 +89,17 @@
       {/if}
     </div>
 
-    <div class="title">
-      <div class={entry.italicizeTitle ? 'italic' : ''}>{entry.title}</div>
-    </div>
+    <div class="list-content">
+      <div class="title flex gap-sm-plus">
+        <div class={entry.italicizeTitle ? 'italic' : ''}>{entry.title}</div>
+        {#if categoryLabels}
+          <p class="text-accent">{categoryLabels}</p>
+        {/if}
+      </div>
 
-    <div class="categories hidden lg:block">
-      <p class="opacity-[.35]">{categoryLabels}</p>
-    </div>
-
-    <div class="description hidden lg:block">
-      <div>{descriptionText || '-'}</div>
-    </div>
-
-    <div class="date flex justify-end">
-      <p>{entry.year || '-'}</p>
+      <div class="description">
+        <div>{descriptionText || '-'}</div>
+      </div>
     </div>
   </a>
 </div>

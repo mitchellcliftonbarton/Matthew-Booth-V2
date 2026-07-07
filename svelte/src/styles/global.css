@@ -7,7 +7,7 @@ Tailwind Vars
 @theme {
   --text-sm: clamp(0.8rem, round(1.5vw, 0.1rem), 1.2rem);
   --text-sm--line-height: 1.25;
-  --text-base: 1.5rem;
+  --text-base: 1.6rem;
   --text-base--line-height: 1.25;
 
   --line-height-default: 2rem;
@@ -17,9 +17,11 @@ Tailwind Vars
 
   --color-grey-1: #f7f7f7;
   --color-grey-2: #eee;
+  --color-accent: rgba(0, 0, 0, 0.35);
 
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
+  --spacing-sm-plus: 1.5rem;
   --spacing-base: 2rem;
   --spacing-line: 1lh;
   --spacing-grid-gap-sm: max(5svw, 4rem);
@@ -207,24 +209,17 @@ Entry Item
 
 .entry-item {
   display: none;
-  border-top: 0.5px solid #666;
   grid-column: 1 / -1;
-  grid-template-columns: subgrid;
+  /* grid-template-columns: subgrid; */
 
   &.active {
-    display: grid;
-  }
-
-  & > a {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: subgrid;
-    align-items: center;
-    padding: 0 0.5lh;
-    min-height: calc(3lh - 0.5px);
+    display: flex;
+    justify-content: flex-start;
   }
 
   .image {
+    display: none;
+    
     .img-thumbnail,
     .text-icon {
       img {
@@ -264,23 +259,11 @@ Entry Item
     }
   }
 
-  .title,
-  .description,
-  .date {
-    padding: 0.75lh 0;
-  }
-
   .description,
   .description div {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  &:hover {
-    @media (min-width: 1024px) {
-      background-color: var(--color-grey-1);
-    }
   }
 }
 
@@ -289,19 +272,14 @@ Entries Container
 */
 
 #entries-container {
-  padding: 0 var(--spacing-sm) 5rem var(--spacing-sm);
+  padding: 0 var(--spacing-base) 5rem var(--spacing-base);
+  margin-top: 1lh;
   /* margin-top: -0.5px; */
 
   .inner {
-    border-bottom: 0.5px solid #666;
     display: grid;
-    grid-template-columns: 0.95fr 6fr 1.4fr;
-    column-gap: 25px;
     align-items: center;
-
-    @media (min-width: 1024px) {
-      grid-template-columns: 1fr 4fr 2fr 4fr 1fr;
-    }
+    gap: var(--spacing-line);
   }
 
   &.is-grid-view {
@@ -345,6 +323,8 @@ Entries Container
         }
 
         .image {
+          display: block;
+
           .img-thumbnail {
             width: auto;
 
@@ -413,12 +393,6 @@ Entries Container
         .date {
           display: none;
         }
-
-        &:hover {
-          @media (min-width: 1024px) {
-            background-color: transparent;
-          }
-        }
       }
     }
   }
@@ -436,18 +410,17 @@ Entries Filters
   display: none;
   align-items: flex-start;
   flex-direction: column;
-  gap: calc(var(--spacing-line) - 4px);
-  margin-top: calc(var(--spacing-line) - 2px);
-  margin-bottom: -2px;
+  /* gap: calc(var(--spacing-line) - 4px); */
+  margin-top: var(--spacing-line);
 
-  @media (min-width: 1024px) {
+  /* @media (min-width: 1024px) {
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     flex-direction: row;
-  }
+  } */
 
   &.active {
-    display: flex;
+    display: block;
   }
 }
 
