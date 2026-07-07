@@ -58,11 +58,26 @@
   const nextUrl = $derived(nextEntry ? buildUrl(`/index/${nextEntry.slug.current}`) : closeUrl);
 
   // Preload the adjacent entries' data on every detail page load so Prev/Next
-  // and arrow-key navigation swap in instantly (no load gap = no visible jump).
+  // and arrow-key navigation swap in instantly (no load gap = no visible flash
+  // of the outgoing entry). Done sequentially: preloadData shares a single
+  // in-flight slot, so firing both at once aborts the first — which left the
+  // "previous" entry uncached and flashing on prev navigation.
   $effect(() => {
     if (!isDetailOpen || filteredEntries.length <= 1) return;
-    preloadData(prevUrl);
-    preloadData(nextUrl);
+    let cancelled = false;
+    (async () => {
+      for (const url of [prevUrl, nextUrl]) {
+        if (cancelled) return;
+        try {
+          await preloadData(url);
+        } catch {
+          // ignore preload failures — navigation will still work, just not warmed
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   });
 
   // info panel state — shared with detail page via context
