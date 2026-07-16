@@ -12,11 +12,7 @@ const CATEGORY_PRESETS: Record<string, {title: string; text?: string}[]> = {
     {title: 'Exhibitions'},
     {title: 'Notes'},
   ],
-  Notes: [
-    {title: 'Medium'},
-    {title: 'Dimensions'},
-    {title: 'Notes'},
-  ],
+  Notes: [{title: 'Medium'}, {title: 'Dimensions'}, {title: 'Notes'}],
   Exhibitions: [
     {title: 'Dates'},
     {title: 'Type', text: 'Solo / Group'},
@@ -25,20 +21,9 @@ const CATEGORY_PRESETS: Record<string, {title: string; text?: string}[]> = {
     {title: 'Artworks'},
     {title: 'Notes'},
   ],
-  Commissions: [
-    {title: 'Client'},
-    {title: 'Collaborators'},
-    {title: 'Notes'},
-  ],
-  Texts: [
-    {title: 'Related'},
-    {title: 'Notes'},
-  ],
-  Publications: [
-    {title: 'Publisher'},
-    {title: 'Details'},
-    {title: 'Notes'},
-  ],
+  Commissions: [{title: 'Client'}, {title: 'Collaborators'}, {title: 'Notes'}],
+  Texts: [{title: 'Related'}, {title: 'Notes'}],
+  Publications: [{title: 'Publisher'}, {title: 'Details'}, {title: 'Notes'}],
 }
 
 function randomKey() {
@@ -47,27 +32,45 @@ function randomKey() {
 
 export function AdditionalInfoInput(props: ArrayOfObjectsInputProps) {
   const categoryRefs = useFormValue(['categories']) as {_ref: string}[] | undefined
+  const hideDefaults = useFormValue(['hideDefaultAdditionalInfo']) as boolean | undefined
+  const entryTitle = useFormValue(['title']) as string | undefined
+  const italicizeTitle = useFormValue(['italicizeTitle']) as boolean | undefined
+  const year = useFormValue(['year']) as string | undefined
   const client = useClient({apiVersion: '2024-01-01'})
-  const [categoryTitles, setCategoryTitles] = useState<string[]>([])
+  const [categories, setCategories] = useState<{title: string; singularTitle?: string}[]>([])
 
   useEffect(() => {
     if (!categoryRefs?.length) {
-      setCategoryTitles([])
+      setCategories([])
       return
     }
     const refs = categoryRefs.map((c) => c._ref)
     client
-      .fetch<{title: string}[]>(`*[_id in $refs]{title}`, {refs})
-      .then((docs) => setCategoryTitles(docs.map((d) => d.title)))
+      .fetch<{title: string; singularTitle?: string}[]>(`*[_id in $refs]{title, singularTitle}`, {
+        refs,
+      })
+      .then((docs) => setCategories(docs))
   }, [categoryRefs, client])
 
   const visiblePresets = Object.entries(CATEGORY_PRESETS).filter(([name]) =>
-    categoryTitles.some((t) => t.toLowerCase() === name.toLowerCase()),
+    categories.some((c) => c.title.toLowerCase() === name.toLowerCase()),
   )
 
-  const handlePreset = (items: {title: string; text?: string}[]) => {
+  const handlePreset = (items: {title: string; text?: string; marks?: string[]}[]) => {
     const current = props.value ?? []
-    const newItems = items.map((item) => ({
+    // When the default title/date/category rows are hidden on the frontend,
+    // seed editable equivalents prefilled from the entry's own fields.
+    const defaultItems = hideDefaults
+      ? [
+          {title: 'Title', text: entryTitle, marks: italicizeTitle ? ['em'] : []},
+          {title: 'Date', text: year},
+          {
+            title: 'Category',
+            text: categories.map((c) => c.singularTitle || c.title).join(', '),
+          },
+        ].filter((item): item is {title: string; text: string; marks?: string[]} => !!item.text)
+      : []
+    const newItems = [...defaultItems, ...items].map((item) => ({
       _type: 'additionalInfoItem',
       _key: randomKey(),
       title: item.title,
@@ -78,7 +81,9 @@ export function AdditionalInfoInput(props: ArrayOfObjectsInputProps) {
               _key: randomKey(),
               style: 'normal',
               markDefs: [],
-              children: [{_type: 'span', _key: randomKey(), text: item.text, marks: []}],
+              children: [
+                {_type: 'span', _key: randomKey(), text: item.text, marks: item.marks ?? []},
+              ],
             },
           ]
         : [],

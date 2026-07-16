@@ -53,7 +53,8 @@ export default {
       name: 'useCustomThumbnail',
       type: 'boolean',
       title: 'Use Custom Thumbnail',
-      description: 'Override the auto-derived thumbnail (taken from the first block) with a custom image or video.',
+      description:
+        'Override the auto-derived thumbnail (taken from the first block) with a custom image or video.',
       initialValue: false,
     },
     {
@@ -98,23 +99,17 @@ export default {
       description: 'The description of the entry shown in the list view.',
     },
     {
-      name: 'showTitleInFooter',
-      type: 'boolean',
-      title: 'Show Title in Footer',
-      description: 'Whether to show the title in the footer of the slide item.',
-      initialValue: true,
-    },
-    {
-      name: 'showInformationSection',
-      type: 'boolean',
-      title: 'Show Information Section',
-      description: 'Whether to show the information section on the slide item.',
-      initialValue: false,
-    },
-    {
       name: 'year',
       type: 'string',
       title: 'Year',
+    },
+    {
+      name: 'hideDefaultAdditionalInfo',
+      type: 'boolean',
+      title: 'Hide Default Additional Info',
+      description:
+        'Whether to hide the default additional info values (title, date, and category).',
+      initialValue: false,
     },
     {
       name: 'additionalInfo',

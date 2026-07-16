@@ -27,22 +27,24 @@
   aria-hidden={!isOpen}
 >
   <div class="additional-info-rows w-full lg:w-2/3 mx-auto">
-    <p class="row-title">Title</p>
-    <div class={entry.italicizeTitle ? 'italic' : ''}>{entry.title}</div>
+    {#if !entry.hideDefaultAdditionalInfo}
+      <p class="row-title">Title</p>
+      <div class={entry.italicizeTitle ? 'italic' : ''}>{entry.title}</div>
 
-    {#if entry.year}
-      <p class="row-title">Date</p>
-      <p>{entry.year}</p>
-    {/if}
+      {#if entry.year}
+        <p class="row-title">Date</p>
+        <p>{entry.year}</p>
+      {/if}
 
-    {#if entry.externalAuthor && entry.externalAuthorName}
-      <p class="row-title">Author</p>
-      <p>{entry.externalAuthorName}</p>
-    {/if}
+      {#if entry.externalAuthor && entry.externalAuthorName}
+        <p class="row-title">Author</p>
+        <p>{entry.externalAuthorName}</p>
+      {/if}
 
-    {#if entry.categories?.length}
-      <p class="row-title">Category</p>
-      <p>{entry.categories.map((c) => c.singularTitle || c.title).join(', ')}</p>
+      {#if entry.categories?.length}
+        <p class="row-title">Category</p>
+        <p>{entry.categories.map((c) => c.singularTitle || c.title).join(', ')}</p>
+      {/if}
     {/if}
 
     {#each additionalInfoItems as info}
