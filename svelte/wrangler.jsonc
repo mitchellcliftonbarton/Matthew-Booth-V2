@@ -4,7 +4,7 @@
 	// repo in the Cloudflare dashboard (Workers & Pages -> import repository)
 	// for automatic deploys with per-branch previews.
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "matthew-booth",
+	"name": "matthew-booth-v2",
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"compatibility_date": "2026-07-01",
 	"compatibility_flags": ["nodejs_compat"],
