@@ -746,8 +746,7 @@ Single Media Block (new Svelte component)
       width: 100%;
 
       .media-inner {
-        /* width: 100%; */
-        width: auto;
+        max-width: 100%;
       }
 
       .video-wrap {
