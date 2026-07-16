@@ -5,12 +5,7 @@
 
   const { data } = $props();
   const page = $derived(data.page);
-  const siteTitle = $derived(data.siteSettings?.siteTitle ?? 'Matthew Booth');
 </script>
-
-<svelte:head>
-  <title>{page.title} — {siteTitle}</title>
-</svelte:head>
 
 <div class="default-page pt-base pb-60 px-base space-y-base w-full lg:w-1/2">
   {#if page.blocks?.length}

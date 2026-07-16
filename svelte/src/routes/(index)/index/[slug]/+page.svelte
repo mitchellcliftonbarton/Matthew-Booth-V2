@@ -26,7 +26,6 @@
 </script>
 
 <svelte:head>
-  <title>{entry.title} — {data.siteSettings?.siteTitle ?? 'Matthew Booth'}</title>
   {#if ogImageUrl}
     <meta property="og:image" content={ogImageUrl} />
   {/if}
