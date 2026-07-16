@@ -90,15 +90,15 @@
     </div>
 
     <div class="list-content">
-      <div class="title flex gap-sm-plus">
-        <div class={entry.italicizeTitle ? 'italic' : ''}>{entry.title}</div>
+      <div class="title space-x-sm-plus">
+        <span class={entry.italicizeTitle ? 'italic' : ''}>{entry.title}</span>
         {#if categoryLabels}
-          <p class="text-accent">{categoryLabels}</p>
+          <span class="text-accent">{categoryLabels}</span>
         {/if}
       </div>
 
       <div class="description">
-        <div>{descriptionText || '-'}</div>
+        <div>{descriptionText || '-'}{ entry.year ? `, ${entry.year}` : '' }</div>
       </div>
     </div>
   </a>

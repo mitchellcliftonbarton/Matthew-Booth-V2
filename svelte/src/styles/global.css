@@ -258,13 +258,6 @@ Entry Item
       display: none;
     }
   }
-
-  .description,
-  .description div {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 
 /*
@@ -753,7 +746,8 @@ Single Media Block (new Svelte component)
       width: 100%;
 
       .media-inner {
-        width: 100%;
+        /* width: 100%; */
+        width: auto;
       }
 
       .video-wrap {
