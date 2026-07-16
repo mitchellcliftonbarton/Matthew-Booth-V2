@@ -1,7 +1,7 @@
 <script>
   import { page } from '$app/state';
   import { goto, beforeNavigate, afterNavigate, preloadData } from '$app/navigation';
-  import { setContext, tick } from 'svelte';
+  import { setContext } from 'svelte';
   import { slugify } from '$lib/utils.js';
   import EntryItem from '$lib/components/EntryItem.svelte';
   import AdditionalInfoPanel from '$lib/components/AdditionalInfoPanel.svelte';
@@ -82,17 +82,24 @@
 
   // info panel state — shared with detail page via context
   let infoOpen = $state(false);
-  let panelTransition = $state(true);
+  // whether the next panel move may animate: true only for deliberate
+  // toggles (Information button, up/down arrows); cleared on navigation so
+  // prev/next swaps snap instantly
+  let panelAnimate = $state(false);
+
+  function toggleInfo(open) {
+    panelAnimate = true;
+    infoOpen = open;
+  }
 
   setContext('entryDetail', {
     get infoOpen() { return infoOpen; },
-    setInfoOpen: (v) => { infoOpen = v; },
+    setInfoOpen: (v) => toggleInfo(v),
   });
 
   $effect(() => {
     if (!isDetailOpen) {
       infoOpen = false;
-      panelTransition = true;
     }
   });
 
@@ -105,24 +112,21 @@
     if (toDetail && !fromDetail) {
       savedScrollY = window.scrollY;
     }
-
-    // Collapse the info panel and kill the slide animation *before* the next
-    // entry mounts, so the incoming (freshly-keyed) panel renders at the top
-    // with no transition to animate. Because the neighbours are preloaded, the
-    // navigation resolves in the same paint — the outgoing entry isn't seen
-    // snapping, and the new one simply appears at the top.
-    panelTransition = false;
-    infoOpen = false;
+    // Deliberately NOT closing the info panel here: the swap can be a frame
+    // or two away (SvelteKit's preload cache only retains one neighbour, so
+    // the other direction re-runs its load), and closing now would reveal the
+    // outgoing entry's main slide in that gap — the "flash". Keep the panel
+    // covering it until the new entry is mounted.
+    panelAnimate = false;
   });
 
-  afterNavigate(async ({ from }) => {
+  afterNavigate(({ from }) => {
     if (from?.route?.id === '/(index)/index/[slug]') {
       window.scrollTo({ top: savedScrollY, behavior: 'instant' });
     }
-    // New entry is mounted at the top; re-enable the animation a tick later so
-    // subsequent user toggles of the info panel slide as expected.
-    await tick();
-    panelTransition = true;
+    // New entry is mounted; close the panel in the same task so the closed
+    // state is what gets painted first.
+    infoOpen = false;
   });
 
   function handleKeydown(e) {
@@ -131,8 +135,8 @@
     if (e.key === 'ArrowLeft') goto(prevUrl, { noScroll: true });
     else if (e.key === 'ArrowRight') goto(nextUrl, { noScroll: true });
     else if (e.key === 'Escape') goto(closeUrl, { noScroll: true });
-    else if (e.key === 'ArrowDown' && !infoOpen && entry?.showInformationSection) infoOpen = true;
-    else if (e.key === 'ArrowUp' && infoOpen) infoOpen = false;
+    else if (e.key === 'ArrowDown' && !infoOpen) toggleInfo(true);
+    else if (e.key === 'ArrowUp' && infoOpen) toggleInfo(false);
   }
 </script>
 
@@ -155,61 +159,66 @@
     <div class="carousel-header absolute top-0 left-0 px-base py-line flex justify-between items-start w-full pointer-events-none z-[1000]">
       <a href={closeUrl} class="pointer-events-auto" data-sveltekit-noscroll>{siteTitle}</a>
 
-      <div class="carousel-controls flex items-start gap-16 select-none">
+      <div class="carousel-controls flex items-start gap-8 lg:gap-16 select-none">
         <p class="entry-tracker pointer-events-auto">
           <span>{trackerLabel}</span>
           <span> {currentIndex + 1}</span>/<span>{filteredEntries.length}</span>
         </p>
 
-        <div class="flex items-start gap-sm">
+        <div class="flex lg:hidden items-start gap-sm">
           <a href={closeUrl} class="pointer-events-auto" data-sveltekit-noscroll>Close</a>
         </div>
+
+        {#if filteredEntries.length > 1}
+          <div class="hidden lg:flex items-center gap-8">
+            <a href={prevUrl} class="pointer-events-auto" data-sveltekit-noscroll data-sveltekit-preload-data="hover">Previous</a>
+            <a href={nextUrl} class="pointer-events-auto" data-sveltekit-noscroll data-sveltekit-preload-data="hover">Next</a>
+          </div>
+        {/if}
       </div>
     </div>
   {/if}
 
   <!-- slide panels wrapper — keyed on slug so child components fully remount on entry change -->
   {#key entry?.slug?.current}
-  <div class="slide-panels" style={panelTransition ? '' : 'transition: none;'}>
+  <div class="slide-panels" class:animate={panelAnimate}>
     {@render children()}
 
-    {#if entry?.showInformationSection}
+    {#if entry}
       <AdditionalInfoPanel
         {entry}
         isOpen={infoOpen}
-        onClose={() => { infoOpen = false; }}
+        onClose={() => toggleInfo(false)}
       />
     {/if}
   </div>
   {/key}
 
   <!-- footer -->
-  {#if entry && (entry.showTitleInFooter || entry.showInformationSection || filteredEntries.length > 1)}
+  {#if entry && filteredEntries.length > 1}
     <div class="slide-footer sticky bottom-0 flex items-end justify-between pointer-events-none w-full px-base py-line">
 
       <div>
-        {#if entry.showInformationSection}
-          <button
-            class="info-button pointer-events-auto"
-            onclick={() => { infoOpen = !infoOpen; }}
-          >{infoOpen ? 'Return' : 'Information'}</button>
-        {/if}
-        {#if entry.showTitleInFooter}
-          {#if entry.showInformationSection}
-            <p class="pointer-events-auto hidden" class:italic={entry.italicizeTitle}>{entry.title}</p>
-          {:else}
-            <p class="pointer-events-auto" class:italic={entry.italicizeTitle}>{entry.title}</p>
-          {/if}
-        {/if}
+        <button
+          class="info-button lg:hidden pointer-events-auto"
+          onclick={() => toggleInfo(!infoOpen)}
+        >{infoOpen ? 'Return' : 'Information'}</button>
+
+        <p class="pointer-events-auto hidden lg:block" class:italic={entry.italicizeTitle}>{entry.title}</p>
       </div>
 
       <div class="flex items-end gap-sm">
         {#if filteredEntries.length > 1}
-          <div class="flex items-center gap-[2rem]">
+          <div class="flex lg:hidden items-center gap-[2rem]">
             <a href={prevUrl} class="pointer-events-auto" data-sveltekit-noscroll data-sveltekit-preload-data="hover">Previous</a>
             <a href={nextUrl} class="pointer-events-auto" data-sveltekit-noscroll data-sveltekit-preload-data="hover">Next</a>
           </div>
         {/if}
+
+        <button
+          class="info-button hidden lg:block pointer-events-auto"
+          onclick={() => toggleInfo(!infoOpen)}
+        >{infoOpen ? 'Return' : 'Information'}</button>
       </div>
 
     </div>

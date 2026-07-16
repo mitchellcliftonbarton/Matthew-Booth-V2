@@ -425,10 +425,6 @@ Entries Filters
     background: transparent;
     border-bottom: none;
   }
-
-  .carousel-controls {
-    gap: 4rem;
-  }
 }
 
 /*
@@ -578,7 +574,10 @@ Entry Detail Page
 #entry-detail {
   overflow: hidden;
 
-  .slide-panels {
+  /* Only animate the panel for deliberate toggles (Information button,
+     up/down arrows) — the .animate class is cleared during entry navigation
+     so prev/next swaps snap instantly. */
+  .slide-panels.animate {
     transition: transform 0.5s ease;
   }
 
@@ -836,6 +835,9 @@ Carousel Block (new Svelte component)
 /* Solo carousel: custom, no Swiper */
 .solo-carousel {
   height: var(--inner-height);
+  /* fill the flex parent — without this the section shrink-wraps to its
+     content, which is just the caption until the image file has loaded */
+  width: 100%;
   cursor: pointer;
   overflow: hidden;
 
@@ -866,6 +868,20 @@ Carousel Block (new Svelte component)
           @media (min-width: 1024px) {
             max-width: 100vw;
           }
+        }
+      }
+
+      /* When the intrinsic ratio is known (images), size the box up front
+         from --media-ratio so layout never waits on the file. Same approach
+         as the single-media video fix; keeps the caption at its final
+         position instead of dead center in the flex-centered slide. */
+      &.has-ratio {
+        width: min(100%, calc((var(--inner-height) - 2.5rem) * var(--media-ratio)));
+
+        .slide-media img {
+          width: 100%;
+          height: auto;
+          aspect-ratio: var(--media-ratio);
         }
       }
     }

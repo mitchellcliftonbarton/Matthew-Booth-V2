@@ -11,6 +11,17 @@
   );
   const slideCount = $derived(media.length);
 
+  // Known intrinsic ratio (images only — video items don't carry dimensions).
+  // Lets CSS reserve the slide's box before the file loads; without it the
+  // slide shrink-wraps to the caption and centers it in the viewport.
+  function itemRatio(item) {
+    if (item.mediaType === 'image') {
+      const d = item.image?.asset?.metadata?.dimensions;
+      if (d?.width && d?.height) return d.width / d.height;
+    }
+    return null;
+  }
+
   let currentIndex = $state(0);
   let containerEl = $state(null);
   let videoEls = $state([]);
@@ -45,8 +56,9 @@
 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
 <section class="solo-carousel" bind:this={containerEl}>
   {#each media as item, i}
+    {@const ratio = itemRatio(item)}
     <div class="solo-slide" class:active={i === currentIndex} aria-hidden={i !== currentIndex}>
-      <figure>
+      <figure class:has-ratio={ratio} style={ratio ? `--media-ratio: ${ratio}` : ''}>
         <div class="slide-media" onclick={advance}>
           {#if item.mediaType === 'image' && item.image}
             <Image

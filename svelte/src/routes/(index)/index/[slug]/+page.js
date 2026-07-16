@@ -1,8 +1,20 @@
 import { client, urlFor } from '$lib/sanity/client.js';
 import { error } from '@sveltejs/kit';
+import { browser } from '$app/environment';
+
+// Session-lifetime memo of load results per slug. SvelteKit's own preload
+// cache holds only the single most recently preloaded route, so of the two
+// neighbours the detail layout warms, only the second (next) survives —
+// Prev navigations refetched over the network and flashed the outgoing
+// slide. Browser only: the server must not share results across requests.
+const resultCache = new Map();
 
 export async function load({ params, parent }) {
   const { entriesIndex } = await parent();
+
+  if (browser && resultCache.has(params.slug)) {
+    return resultCache.get(params.slug);
+  }
 
   const entry = await client.fetch(
     `*[_type == "entry" && slug.current == $slug][0]{
@@ -11,11 +23,10 @@ export async function load({ params, parent }) {
       italicizeTitle,
       externalAuthor,
       externalAuthorName,
-      showTitleInFooter,
-      showInformationSection,
       year,
       categories[]->{ title, singularTitle },
       useCustomThumbnail,
+      hideDefaultAdditionalInfo,
       customThumbnail {
         mediaType,
         image { asset->{ _id, url, metadata { dimensions } } },
@@ -106,5 +117,7 @@ export async function load({ params, parent }) {
     }
   });
 
-  return { entry, preloadUrls };
+  const result = { entry, preloadUrls };
+  if (browser) resultCache.set(params.slug, result);
+  return result;
 }
