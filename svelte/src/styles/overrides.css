@@ -120,8 +120,17 @@ figcaption {
 padding-bottom: 0 !important;
 }
 
-main:has(#entry-detail:not(.hidden)) #entries-container {
-display: none;
+/* Lock page scroll while the entry overlay is open. The index stays rendered
+   (and keeps its scroll position) underneath — display:none collapsed the page
+   height and made scroll restoration fragile. overscroll-behavior stops the
+   overlay's internal scrollers from chaining touch scrolls to the page. */
+body:has(#entry-detail:not(.hidden)) {
+  overflow: hidden;
+}
+
+#entry-detail .slide-item-inner,
+#entry-detail .additional-info-block {
+  overscroll-behavior: contain;
 }
 
 :is(.single-media-block.is-solo .video-wrap,.single-media-block.is-solo .vimeo-wrap) video {
