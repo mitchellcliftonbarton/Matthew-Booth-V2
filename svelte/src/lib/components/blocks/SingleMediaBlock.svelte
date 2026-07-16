@@ -124,7 +124,7 @@
 {:else if block.mediaType === 'video' && block.video?.asset?.url}
   <section class="single-media-block type-video" class:is-solo={isSolo} class:is-portrait={isPortrait}>
     <div class="media-inner" style="{isPortrait && !isSolo ? `max-width: calc(var(--inner-height) * ${aspectRatio}); margin: 0 auto;` : ''}">
-      <div class="video-wrap" style="aspect-ratio: {aspectRatio};">
+      <div class="video-wrap" style="aspect-ratio: {aspectRatio}; --media-ratio: {aspectRatio};">
         {#if block.autoplay}
           <video
             bind:this={videoEl}
@@ -156,9 +156,8 @@
 
         {#if block.autoplay}
           <div class="video-buttons">
-            {#if showPlayPause}
-              <button onclick={togglePlayPause}>{isPaused ? 'Play' : 'Pause'}</button>
-            {/if}
+            <!-- always in the layout so its late arrival can't shift neighbours -->
+            <button style:visibility={showPlayPause ? 'visible' : 'hidden'} onclick={togglePlayPause}>{isPaused ? 'Play' : 'Pause'}</button>
             {#if block.hasAudio !== false}
               <button onclick={toggleMute}>{isMuted ? 'Unmute' : 'Mute'}</button>
             {/if}

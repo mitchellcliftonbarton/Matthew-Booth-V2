@@ -743,6 +743,24 @@ Single Media Block (new Svelte component)
         width: auto;
       }
     }
+
+    /* Native video: size the wrap purely from the known aspect ratio
+       (--media-ratio, set inline) so layout never consults the <video>
+       element's natural size — which is 300px wide until metadata loads
+       and caused the whole section to jump once the file arrived.
+       2.5rem matches the controls-row allowance in overrides.css. */
+    &.type-video {
+      width: 100%;
+
+      .media-inner {
+        width: 100%;
+      }
+
+      .video-wrap {
+        width: min(100%, calc((var(--inner-height) - 2.5rem) * var(--media-ratio, calc(16 / 9))));
+        margin-inline: auto;
+      }
+    }
   }
 
   /* multi-block */
