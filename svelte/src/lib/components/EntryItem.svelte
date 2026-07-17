@@ -5,6 +5,7 @@
   import IconDocument from './IconDocument.svelte';
   import Portable from './Portable.svelte';
   import { slugify } from '$lib/utils.js';
+  import { muxPosterUrl } from '$lib/mux.js';
   import { toPlainText } from '@portabletext/svelte';
 
   // props
@@ -49,13 +50,14 @@
     if (entry.useCustomThumbnail && entry.customThumbnail) return entry.customThumbnail;
     const b = entry.firstBlock;
     if (!b) return null;
-    if (b._type === 'singleMediaBlock') return { mediaType: b.mediaType, image: b.image, video: { asset: { url: b.video?.asset?.url ?? null } } };
-    if (b._type === 'carouselBlock' && b.firstMedia) return { mediaType: b.firstMedia.mediaType, image: b.firstMedia.image, video: { asset: { url: b.firstMedia.videoUrl ?? null } } };
+    if (b._type === 'singleMediaBlock') return { mediaType: b.mediaType, image: b.image, video: { asset: { url: b.video?.asset?.url ?? null } }, muxPlaybackId: b.muxPlaybackId ?? null, muxThumbTime: b.muxThumbTime ?? null };
+    if (b._type === 'carouselBlock' && b.firstMedia) return { mediaType: b.firstMedia.mediaType, image: b.firstMedia.image, video: { asset: { url: b.firstMedia.videoUrl ?? null } }, muxPlaybackId: b.firstMedia.muxPlaybackId ?? null, muxThumbTime: b.firstMedia.muxThumbTime ?? null };
     return null;
   })());
 
   const hasImage = $derived(thumbnail?.mediaType === 'image' && !!thumbnail?.image?.asset?.url);
   const hasVideo = $derived(thumbnail?.mediaType === 'video' && !!thumbnail?.video?.asset?.url);
+  const hasMuxVideo = $derived(thumbnail?.mediaType === 'muxVideo' && !!thumbnail?.muxPlaybackId);
 </script>
 
 <div class="entry-item {isActive ? 'active' : ''} {entry.externalAuthor ? 'external-author' : ''}" categories={categorySlugs.join(',')}>
@@ -64,6 +66,12 @@
       {#if hasImage}
         <figure class="img-thumbnail aspect-square">
           <Image item={thumbnail.image} fetchWidth={500} />
+        </figure>
+      {:else if hasMuxVideo}
+        <figure class="img-thumbnail aspect-square">
+          <!-- no loading="lazy": the global img[loading="lazy"] fade-in rule
+               expects Image.svelte's onload handling, which this plain img lacks -->
+          <img src={muxPosterUrl(thumbnail.muxPlaybackId, 500, thumbnail.muxThumbTime ?? 0)} alt={entry.title} />
         </figure>
       {:else if hasVideo}
         <figure class="img-thumbnail aspect-square">
@@ -80,7 +88,7 @@
         <div class="text-preview text-sm">
           {#if entry.firstTextBlock?.length}
             <div class="rich-text-breaks-only">
-              <Portable value={entry.firstTextBlock} />
+              <Portable value={entry.firstTextBlock} plainLinks />
             </div>
           {:else}
             <p>{entry.title}</p>

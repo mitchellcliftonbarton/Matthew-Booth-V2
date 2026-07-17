@@ -70,7 +70,8 @@ export default {
           options: {
             list: [
               {title: 'Image', value: 'image'},
-              {title: 'Video', value: 'video'},
+              {title: 'Video (Mux)', value: 'muxVideo'},
+              {title: 'Video (file)', value: 'video'},
             ],
             layout: 'radio',
           },
@@ -81,6 +82,12 @@ export default {
           name: 'image',
           title: 'Image',
           hidden: ({parent}: any) => parent?.mediaType !== 'image',
+        },
+        {
+          name: 'muxVideo',
+          type: 'mux.video',
+          title: 'Video (Mux)',
+          hidden: ({parent}: any) => parent?.mediaType !== 'muxVideo',
         },
         {
           name: 'video',

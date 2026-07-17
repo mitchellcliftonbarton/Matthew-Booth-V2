@@ -744,11 +744,20 @@ Single Media Block (new Svelte component)
     &.type-video {
       width: 100%;
 
+      /* width (not max-width): .media-inner is a column-flex item under
+         align-items: center, so without a definite width it falls back to
+         fit-content — hugging the video, whose intrinsic size changes during
+         HLS startup (poster -> lowest rendition -> upswitch) and made the
+         whole block breathe. */
       .media-inner {
-        max-width: 100%;
+        width: 100%;
       }
 
-      .video-wrap {
+      /* controls row gets the same width as the video so the caption and
+         Pause/Mute buttons align with the media edges (--media-ratio is set
+         inline on .media-inner) */
+      .video-wrap,
+      .video-controls {
         width: min(100%, calc((var(--inner-height) - 2.5rem) * var(--media-ratio, calc(16 / 9))));
         margin-inline: auto;
       }
@@ -871,14 +880,15 @@ Carousel Block (new Svelte component)
         }
       }
 
-      /* When the intrinsic ratio is known (images), size the box up front
-         from --media-ratio so layout never waits on the file. Same approach
-         as the single-media video fix; keeps the caption at its final
-         position instead of dead center in the flex-centered slide. */
+      /* When the intrinsic ratio is known (images and Mux videos), size the
+         box up front from --media-ratio so layout never depends on the
+         media's natural size. That matters twice over for HLS video: its
+         intrinsic size changes during playback (poster -> lowest rendition
+         -> quality upswitch) and would resize the slide each time. */
       &.has-ratio {
         width: min(100%, calc((var(--inner-height) - 2.5rem) * var(--media-ratio)));
 
-        .slide-media img {
+        .slide-media :is(img, video) {
           width: 100%;
           height: auto;
           aspect-ratio: var(--media-ratio);

@@ -12,7 +12,8 @@ export default {
       options: {
         list: [
           {title: 'Image', value: 'image'},
-          {title: 'Video', value: 'video'},
+          {title: 'Video (Mux)', value: 'muxVideo'},
+          {title: 'Video (file)', value: 'video'},
           {title: 'Vimeo', value: 'vimeo'},
         ],
         layout: 'radio',
@@ -24,6 +25,12 @@ export default {
       name: 'image',
       title: 'Image',
       hidden: ({parent}: any) => parent?.mediaType !== 'image',
+    },
+    {
+      name: 'muxVideo',
+      type: 'mux.video',
+      title: 'Video (Mux)',
+      hidden: ({parent}: any) => parent?.mediaType !== 'muxVideo',
     },
     {
       name: 'video',
@@ -42,17 +49,17 @@ export default {
       name: 'width',
       type: 'number',
       title: 'Width',
-      description: 'Aspect ratio width. Defaults to 1600.',
+      description: 'Aspect ratio width. Defaults to 1600. (Not needed for Mux videos — the ratio comes from the asset.)',
       initialValue: 1600,
-      hidden: ({parent}: any) => parent?.mediaType === 'image',
+      hidden: ({parent}: any) => parent?.mediaType === 'image' || parent?.mediaType === 'muxVideo',
     },
     {
       name: 'height',
       type: 'number',
       title: 'Height',
-      description: 'Aspect ratio height. Defaults to 900.',
+      description: 'Aspect ratio height. Defaults to 900. (Not needed for Mux videos — the ratio comes from the asset.)',
       initialValue: 900,
-      hidden: ({parent}: any) => parent?.mediaType === 'image',
+      hidden: ({parent}: any) => parent?.mediaType === 'image' || parent?.mediaType === 'muxVideo',
     },
     {
       name: 'autoplay',
@@ -74,7 +81,14 @@ export default {
   preview: {
     select: {mediaType: 'mediaType', image: 'image'},
     prepare({mediaType, image}: any) {
-      const title = mediaType === 'video' ? 'Video' : mediaType === 'vimeo' ? 'Vimeo' : 'Image'
+      const title =
+        mediaType === 'video'
+          ? 'Video'
+          : mediaType === 'muxVideo'
+            ? 'Video (Mux)'
+            : mediaType === 'vimeo'
+              ? 'Vimeo'
+              : 'Image'
       return {title, media: image?.asset}
     },
   },

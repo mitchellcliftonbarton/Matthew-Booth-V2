@@ -1,12 +1,19 @@
 <script>
   import { onMount } from 'svelte';
   import Image from '$lib/components/Image.svelte';
+  import { attachMuxStream, muxPosterUrl } from '$lib/mux.js';
 
   let { block, eager = false } = $props();
 
   const media = $derived(
     (block.media ?? []).filter((item) =>
-      item.mediaType === 'image' ? !!item.image : item.mediaType === 'video' ? !!item.videoUrl : false
+      item.mediaType === 'image'
+        ? !!item.image
+        : item.mediaType === 'muxVideo'
+          ? !!item.muxPlaybackId
+          : item.mediaType === 'video'
+            ? !!item.videoUrl
+            : false
     )
   );
   const firstItem = $derived(media[0]);
@@ -16,6 +23,10 @@
     if (firstItem.mediaType === 'image') {
       const dims = firstItem.image?.asset?.metadata?.dimensions;
       if (dims?.width && dims?.height) return dims.width / dims.height;
+    }
+    if (firstItem.mediaType === 'muxVideo' && firstItem.muxAspectRatio) {
+      const [w, h] = String(firstItem.muxAspectRatio).split(':').map(Number);
+      if (w > 0 && h > 0) return w / h;
     }
     return 16 / 9;
   });
@@ -37,8 +48,19 @@
   }
 
   onMount(() => {
+    // wire Mux HLS streams to their video elements
+    const detachers = media
+      .map((item, i) =>
+        item.mediaType === 'muxVideo' && videoEls[i]
+          ? attachMuxStream(videoEls[i], item.muxPlaybackId)
+          : null
+      )
+      .filter(Boolean);
+
     const firstVideo = videoEls[0];
     if (firstVideo) firstVideo.play().catch(() => {});
+
+    return () => detachers.forEach((detach) => detach());
   });
 </script>
 
@@ -57,6 +79,16 @@
             classes="media-cover"
             loading="eager"
           />
+        {:else if item.mediaType === 'muxVideo' && item.muxPlaybackId}
+          <video
+            poster={muxPosterUrl(item.muxPlaybackId, 1800, item.muxThumbTime ?? 0)}
+            muted
+            loop
+            playsinline
+            preload="auto"
+            class="media-cover"
+            bind:this={videoEls[i]}
+          ></video>
         {:else if item.mediaType === 'video' && item.videoUrl}
           <video
             src={item.videoUrl}

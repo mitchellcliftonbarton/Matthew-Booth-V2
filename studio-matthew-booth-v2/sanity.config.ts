@@ -2,6 +2,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
+import {muxInput} from 'sanity-plugin-mux-input'
 import {schemaTypes} from './schemaTypes'
 import {myStructure} from './myStructure'
 
@@ -17,6 +18,7 @@ export default defineConfig({
       structure: (S, context) => myStructure(S, context),
     }),
     visionTool(),
+    muxInput({mp4_support: 'standard'}),
   ],
 
   schema: {

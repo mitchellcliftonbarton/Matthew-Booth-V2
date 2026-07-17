@@ -3,17 +3,34 @@
   import Player from '@vimeo/player';
   import Image from '$lib/components/Image.svelte';
   import { activeAudioId } from '$lib/stores/activeAudio.js';
+  import { attachMuxStream, muxAspectRatio, muxPosterUrl } from '$lib/mux.js';
 
   let { block, isSolo = false, eager = false } = $props();
 
-  const aspectRatio = $derived(
-    block.width && block.height ? block.width / block.height : 16 / 9
+  // Mux and file uploads share the same <video> element + custom controls
+  const isNativeVideo = $derived(block.mediaType === 'video' || block.mediaType === 'muxVideo');
+  const muxPlaybackId = $derived(
+    block.mediaType === 'muxVideo' ? (block.muxVideo?.asset?.playbackId ?? null) : null
   );
+  // poster frame chosen in the studio (thumbTime), else the first frame
+  const muxPoster = $derived(
+    muxPlaybackId ? muxPosterUrl(muxPlaybackId, 1800, block.muxVideo?.asset?.thumbTime ?? 0) : null
+  );
+
+  const aspectRatio = $derived.by(() => {
+    if (block.mediaType === 'muxVideo') {
+      const r = muxAspectRatio(block.muxVideo?.asset);
+      if (r) return r;
+    }
+    return block.width && block.height ? block.width / block.height : 16 / 9;
+  });
 
   const isPortrait = $derived(
     block.mediaType === 'image'
       ? (block.image?.asset?.metadata?.dimensions?.height ?? 0) > (block.image?.asset?.metadata?.dimensions?.width ?? 0)
-      : (block.height ?? 0) > (block.width ?? 0)
+      : block.mediaType === 'muxVideo'
+        ? aspectRatio < 1
+        : (block.height ?? 0) > (block.width ?? 0)
   );
 
   let videoEl = $state(null);
@@ -23,14 +40,18 @@
   // unique id for this block instance
   const blockId = {};
 
-  // play/pause hidden until autoplay attempt resolves
+  // Optimistic: for autoplay videos the button shows "Pause" from first paint
+  // (muted autoplay almost always succeeds); if the attempt fails it flips to
+  // "Play". Set when the user pauses manually so a late-arriving stream
+  // (Mux waits for canplay) doesn't restart against their intent.
   let showPlayPause = $state(false);
   let isPaused = $state(false);
+  let userPaused = false;
   const isMuted = $derived($activeAudioId !== blockId);
 
   // For non-autoplay native videos: claim active audio when the user hits play
   $effect(() => {
-    if (block.mediaType !== 'video' || block.autoplay || !videoEl) return;
+    if (!isNativeVideo || block.autoplay || !videoEl) return;
     function onPlay() { activeAudioId.set(blockId); }
     videoEl.addEventListener('play', onPlay);
     return () => videoEl.removeEventListener('play', onPlay);
@@ -38,7 +59,7 @@
 
   // When this block loses active status, mute autoplay videos and pause non-autoplay ones
   $effect(() => {
-    if (block.mediaType === 'video' && videoEl) {
+    if (isNativeVideo && videoEl) {
       if (block.autoplay) {
         videoEl.muted = isMuted;
       } else if (isMuted && !videoEl.paused) {
@@ -51,6 +72,10 @@
   });
 
   onMount(() => {
+    let detachMux = () => {};
+    if (muxPlaybackId && videoEl) {
+      detachMux = attachMuxStream(videoEl, muxPlaybackId);
+    }
     if (block.mediaType === 'vimeo' && vimeoContainer && block.vimeoUrl) {
       vimeoPlayer = new Player(vimeoContainer, {
         url: block.vimeoUrl,
@@ -68,17 +93,29 @@
       }
     }
 
-    if (block.mediaType === 'video' && videoEl && block.autoplay) {
-      videoEl.play().then(() => {
-        showPlayPause = true;
-        isPaused = false;
-      }).catch(() => {
-        showPlayPause = true;
-        isPaused = true;
-      });
+    if (isNativeVideo && videoEl && block.autoplay) {
+      // button is visible immediately, optimistically labelled "Pause"
+      showPlayPause = true;
+      isPaused = false;
+
+      const tryPlay = () => {
+        if (userPaused) return;
+        videoEl.play().then(() => {
+          isPaused = false;
+        }).catch(() => {
+          isPaused = true;
+        });
+      };
+      if (muxPlaybackId) {
+        // HLS source is attached asynchronously — wait until it can play
+        videoEl.addEventListener('canplay', tryPlay, { once: true });
+      } else {
+        tryPlay();
+      }
     }
 
     return () => {
+      detachMux();
       if (vimeoPlayer) {
         vimeoPlayer.destroy().catch(() => {});
         vimeoPlayer = null;
@@ -87,10 +124,12 @@
   });
 
   function togglePlayPause() {
-    if (block.mediaType === 'video' && videoEl) {
-      if (videoEl.paused) {
-        videoEl.play().then(() => { isPaused = false; });
+    if (isNativeVideo && videoEl) {
+      if (isPaused) {
+        userPaused = false;
+        videoEl.play().then(() => { isPaused = false; }).catch(() => {});
       } else {
+        userPaused = true;
         videoEl.pause();
         isPaused = true;
       }
@@ -121,14 +160,15 @@
     </figure>
   </section>
 
-{:else if block.mediaType === 'video' && block.video?.asset?.url}
+{:else if (block.mediaType === 'video' && block.video?.asset?.url) || (block.mediaType === 'muxVideo' && muxPlaybackId)}
   <section class="single-media-block type-video" class:is-solo={isSolo} class:is-portrait={isPortrait}>
-    <div class="media-inner" style="{isPortrait && !isSolo ? `max-width: calc(var(--inner-height) * ${aspectRatio}); margin: 0 auto;` : ''}">
-      <div class="video-wrap" style="aspect-ratio: {aspectRatio}; --media-ratio: {aspectRatio};">
+    <div class="media-inner" style="--media-ratio: {aspectRatio};{isPortrait && !isSolo ? ` max-width: calc(var(--inner-height) * ${aspectRatio}); margin: 0 auto;` : ''}">
+      <div class="video-wrap" style="aspect-ratio: {aspectRatio};">
         {#if block.autoplay}
           <video
             bind:this={videoEl}
-            src={block.video.asset.url}
+            src={muxPlaybackId ? undefined : block.video?.asset?.url}
+            poster={muxPoster ?? undefined}
             playsinline
             preload="metadata"
             muted
@@ -138,7 +178,8 @@
         {:else}
           <video
             bind:this={videoEl}
-            src={block.video.asset.url}
+            src={muxPlaybackId ? undefined : block.video?.asset?.url}
+            poster={muxPoster ?? undefined}
             playsinline
             preload="metadata"
             controls

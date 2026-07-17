@@ -3,6 +3,7 @@
   import CarouselBlock from '$lib/components/blocks/CarouselBlock.svelte';
   import SoloCarousel from '$lib/components/blocks/SoloCarousel.svelte';
   import TextBlock from '$lib/components/blocks/TextBlock.svelte';
+  import { muxPosterUrl } from '$lib/mux.js';
 
   const { data } = $props();
 
@@ -20,7 +21,11 @@
     if (entry.useCustomThumbnail && entry.customThumbnail?.mediaType === 'image') return entry.customThumbnail?.image?.asset?.url ?? null;
     const b = blocks[0];
     if (b?._type === 'singleMediaBlock' && b.mediaType === 'image') return b.image?.asset?.url ?? null;
-    if (b?._type === 'carouselBlock') return b.media?.[0]?.image?.asset?.url ?? null;
+    if (b?._type === 'singleMediaBlock' && b.mediaType === 'muxVideo' && b.muxVideo?.asset?.playbackId) return muxPosterUrl(b.muxVideo.asset.playbackId);
+    if (b?._type === 'carouselBlock') {
+      const m = b.media?.[0];
+      return m?.image?.asset?.url ?? (m?.muxPlaybackId ? muxPosterUrl(m.muxPlaybackId) : null);
+    }
     return null;
   })());
 </script>

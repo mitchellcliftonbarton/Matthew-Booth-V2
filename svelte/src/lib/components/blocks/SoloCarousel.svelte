@@ -1,23 +1,35 @@
 <script>
   import { onMount } from 'svelte';
   import Image from '$lib/components/Image.svelte';
+  import { attachMuxStream, muxPosterUrl } from '$lib/mux.js';
 
   let { block } = $props();
 
   const media = $derived(
     (block.media ?? []).filter((item) =>
-      item.mediaType === 'image' ? !!item.image : item.mediaType === 'video' ? !!item.videoUrl : false
+      item.mediaType === 'image'
+        ? !!item.image
+        : item.mediaType === 'muxVideo'
+          ? !!item.muxPlaybackId
+          : item.mediaType === 'video'
+            ? !!item.videoUrl
+            : false
     )
   );
   const slideCount = $derived(media.length);
 
-  // Known intrinsic ratio (images only — video items don't carry dimensions).
-  // Lets CSS reserve the slide's box before the file loads; without it the
-  // slide shrink-wraps to the caption and centers it in the viewport.
+  // Known intrinsic ratio (images and Mux videos — file videos don't carry
+  // dimensions). Lets CSS reserve the slide's box before the file loads;
+  // without it the slide shrink-wraps to the caption and centers it in the
+  // viewport.
   function itemRatio(item) {
     if (item.mediaType === 'image') {
       const d = item.image?.asset?.metadata?.dimensions;
       if (d?.width && d?.height) return d.width / d.height;
+    }
+    if (item.mediaType === 'muxVideo' && item.muxAspectRatio) {
+      const [w, h] = String(item.muxAspectRatio).split(':').map(Number);
+      if (w > 0 && h > 0) return w / h;
     }
     return null;
   }
@@ -47,9 +59,20 @@
 
     containerEl.querySelectorAll('img').forEach((img) => img.decode().catch(() => {}));
 
+    // wire Mux HLS streams to their video elements
+    const detachers = media
+      .map((item, i) =>
+        item.mediaType === 'muxVideo' && videoEls[i]
+          ? attachMuxStream(videoEls[i], item.muxPlaybackId)
+          : null
+      )
+      .filter(Boolean);
+
     // play video if first slide is a video
     const firstVideo = videoEls[0];
     if (firstVideo) firstVideo.play().catch(() => {});
+
+    return () => detachers.forEach((detach) => detach());
   });
 </script>
 
@@ -65,6 +88,15 @@
               item={item.image}
               loading="eager"
             />
+          {:else if item.mediaType === 'muxVideo' && item.muxPlaybackId}
+            <video
+              poster={muxPosterUrl(item.muxPlaybackId, 1800, item.muxThumbTime ?? 0)}
+              muted
+              loop
+              playsinline
+              preload="auto"
+              bind:this={videoEls[i]}
+            ></video>
           {:else if item.mediaType === 'video' && item.videoUrl}
             <video
               src={item.videoUrl}

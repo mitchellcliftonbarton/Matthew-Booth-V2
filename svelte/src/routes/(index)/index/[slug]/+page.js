@@ -30,7 +30,8 @@ export async function load({ params, parent }) {
       customThumbnail {
         mediaType,
         image { asset->{ _id, url, metadata { dimensions } } },
-        video { asset->{ url } }
+        video { asset->{ url } },
+        "muxPlaybackId": muxVideo.asset->playbackId
       },
       blocks[] {
         _type,
@@ -43,12 +44,16 @@ export async function load({ params, parent }) {
         text,
         image { ..., asset->{ _id, url, metadata { dimensions } } },
         video { asset->{ url } },
+        muxVideo { asset->{ playbackId, thumbTime, data { aspect_ratio } } },
         vimeoUrl,
         media[] {
           mediaType,
           caption,
           image { ..., asset->{ _id, url, metadata { dimensions } } },
-          "videoUrl": video.asset->url
+          "videoUrl": video.asset->url,
+          "muxPlaybackId": muxVideo.asset->playbackId,
+          "muxAspectRatio": muxVideo.asset->data.aspect_ratio,
+          "muxThumbTime": muxVideo.asset->thumbTime
         }
       },
       additionalInfo[] {

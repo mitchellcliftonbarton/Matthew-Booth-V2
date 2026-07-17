@@ -14,17 +14,23 @@ export async function load() {
       customThumbnail {
         mediaType,
         image { asset->{ ..., metadata } },
-        video { asset->{ url } }
+        video { asset->{ url } },
+        "muxPlaybackId": muxVideo.asset->playbackId,
+        "muxThumbTime": muxVideo.asset->thumbTime
       },
       "firstBlock": blocks[_type in ["singleMediaBlock", "carouselBlock"]][0] {
         _type,
         mediaType,
         image { asset->{ ..., metadata } },
         video { asset->{ url } },
+        "muxPlaybackId": muxVideo.asset->playbackId,
+        "muxThumbTime": muxVideo.asset->thumbTime,
         "firstMedia": media[0] {
           mediaType,
           image { asset->{ ..., metadata } },
-          "videoUrl": video.asset->url
+          "videoUrl": video.asset->url,
+          "muxPlaybackId": muxVideo.asset->playbackId,
+          "muxThumbTime": muxVideo.asset->thumbTime
         }
       },
       categories[]->{ _id, title, singularTitle },
