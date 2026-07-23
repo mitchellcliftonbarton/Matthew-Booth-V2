@@ -4,6 +4,7 @@
 	import 'nprogress/nprogress.css';
 	import { page } from '$app/state';
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	import MainNav from '$lib/components/MainNav.svelte';
 
@@ -31,6 +32,10 @@
 	afterNavigate(() => {
 		clearTimeout(loadingTimeout);
 		NProgress.done();
+	});
+
+	onMount(() => {
+		console.log('%c \nDevelopment by Cold Rice \n \ncold-rice.info \n \n', 'color: grey')
 	});
 </script>
 
