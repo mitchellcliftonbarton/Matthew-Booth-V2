@@ -1,6 +1,5 @@
 <script>
   // imports
-  import { page } from '$app/state';
   import Image from './Image.svelte';
   import IconDocument from './IconDocument.svelte';
   import Portable from './Portable.svelte';
@@ -8,12 +7,9 @@
   import { muxPosterUrl } from '$lib/mux.js';
   import { toPlainText } from '@portabletext/svelte';
 
-  // props
-  const { entry } = $props();
-
-  // url params
-  const categoryParam = $derived(page.url.searchParams.get('category'));
-  const viewParam = $derived(page.url.searchParams.get('view'));
+  // props — categoryParam comes from the layout (URL on the index, stored
+  // context while the detail overlay is open)
+  const { entry, categoryParam = null } = $props();
 
   // derive slugified category values to match against ?category param
   const categorySlugs = $derived((entry.categories ?? []).map((c) => slugify(c.title)));
@@ -36,14 +32,9 @@
   // plain text version of description for list display
   const descriptionText = $derived(toPlainText(entry.description ?? []));
 
-  // entry url preserves the active category and view params
-  const entryUrl = $derived((() => {
-    const params = new URLSearchParams();
-    if (categoryParam) params.set('category', categoryParam);
-    if (viewParam) params.set('view', viewParam);
-    const search = params.toString();
-    return `/index/${entry.slug.current}` + (search ? `?${search}` : '');
-  })());
+  // param-free so the same entry URL is :visited from every filtered view;
+  // the filter context lives in the indexContext store instead
+  const entryUrl = $derived(`/index/${entry.slug.current}`);
 
   // resolve thumbnail: custom override or auto-derived from first block
   const thumbnail = $derived((() => {

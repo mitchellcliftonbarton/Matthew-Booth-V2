@@ -217,6 +217,25 @@ Entry Item
     justify-content: flex-start;
   }
 
+  /* Browsers only allow color changes on the link element itself in :visited
+     (history-sniffing protection — descendant selectors won't match), so the
+     blue/purple sits on the <a> and reaches the title span via inheritance.
+     Everything else inside the link opts out with an explicit color. */
+  a {
+    color: #0000ee; /* fallback: traditional default link blue */
+    color: LinkText;
+
+    &:visited {
+      color: #551a8b; /* fallback: traditional default visited purple */
+      color: VisitedText;
+    }
+  }
+
+  .description,
+  .text-preview {
+    color: var(--color-black);
+  }
+
   .image {
     display: none;
     
@@ -392,7 +411,14 @@ Entries Container
 }
 
 .entry-tracker {
-  opacity: 0.35;
+  /* hidden until hydration: on a hard reload the server doesn't know the
+     filter context, so the counts are only correct client-side */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  &.hydrated {
+    opacity: 0.35;
+  }
 }
 
 /*

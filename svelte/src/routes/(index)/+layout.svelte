@@ -1,8 +1,9 @@
 <script>
   import { page } from '$app/state';
   import { goto, beforeNavigate, afterNavigate, preloadData } from '$app/navigation';
-  import { setContext } from 'svelte';
+  import { setContext, onMount } from 'svelte';
   import { slugify } from '$lib/utils.js';
+  import { indexContext, setIndexContext } from '$lib/stores/indexContext.svelte.js';
   import EntryItem from '$lib/components/EntryItem.svelte';
   import AdditionalInfoPanel from '$lib/components/AdditionalInfoPanel.svelte';
 
@@ -15,8 +16,27 @@
   const entriesIndex = $derived(data.entriesIndex ?? []);
   const categories = $derived(data.categories ?? []);
 
-  const categoryParam = $derived(page.url.searchParams.get('category'));
-  const viewParam = $derived(page.url.searchParams.get('view'));
+  // Entry URLs are param-free so :visited matches consistently across filters.
+  // On the index the URL params are the source of truth (and get mirrored to
+  // the context store); on detail pages the URL carries nothing, so the
+  // last-seen context takes over.
+  const urlCategory = $derived(page.url.searchParams.get('category'));
+  const urlView = $derived(page.url.searchParams.get('view'));
+
+  const categoryParam = $derived(isDetailOpen ? indexContext.category : urlCategory);
+  const viewParam = $derived(isDetailOpen ? indexContext.view : urlView);
+
+  $effect(() => {
+    if (!isDetailOpen) setIndexContext(urlCategory, urlView);
+  });
+
+  // The detail context (tracker label/counts, prev/next targets) depends on
+  // sessionStorage, which the server can't see — keep the tracker hidden until
+  // hydration so a hard reload never flashes unfiltered counts.
+  let hydrated = $state(false);
+  onMount(() => {
+    hydrated = true;
+  });
 
   const filteredEntries = $derived(
     categoryParam
@@ -53,9 +73,10 @@
     return pathname + (search ? `?${search}` : '');
   }
 
+  // detail URLs stay param-free (see above); only the close URL restores params
   const closeUrl = $derived(buildUrl('/'));
-  const prevUrl = $derived(prevEntry ? buildUrl(`/index/${prevEntry.slug.current}`) : closeUrl);
-  const nextUrl = $derived(nextEntry ? buildUrl(`/index/${nextEntry.slug.current}`) : closeUrl);
+  const prevUrl = $derived(prevEntry ? `/index/${prevEntry.slug.current}` : closeUrl);
+  const nextUrl = $derived(nextEntry ? `/index/${nextEntry.slug.current}` : closeUrl);
 
   // Preload the adjacent entries' data on every detail page load so Prev/Next
   // and arrow-key navigation swap in instantly (no load gap = no visible flash
@@ -146,7 +167,7 @@
 <div id="entries-container" class={viewParam === 'grid' ? 'is-grid-view' : ''}>
   <div class="inner">
     {#each entries as entry (entry._id)}
-      <EntryItem {entry} />
+      <EntryItem {entry} {categoryParam} />
     {/each}
   </div>
 </div>
@@ -160,7 +181,7 @@
       <a href={closeUrl} class="pointer-events-auto" data-sveltekit-noscroll>{siteTitle}</a>
 
       <div class="carousel-controls flex items-start gap-8 lg:gap-16 select-none">
-        <p class="entry-tracker pointer-events-auto">
+        <p class="entry-tracker pointer-events-auto" class:hydrated>
           <span>{trackerLabel}</span>
           <span> {currentIndex + 1}</span>/<span>{filteredEntries.length}</span>
         </p>
