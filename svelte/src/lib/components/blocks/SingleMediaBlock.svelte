@@ -25,6 +25,16 @@
     return block.width && block.height ? block.width / block.height : 16 / 9;
   });
 
+  // Known image ratio, passed to CSS as --media-ratio so the figure can be
+  // sized without consulting the img's natural size: WebKit resolves the
+  // figure's fit-content width before a lazy image has loaded (shrink-wrapping
+  // to the caption text) and never re-resolves it once the image arrives.
+  const imageRatio = $derived.by(() => {
+    if (block.mediaType !== 'image') return null;
+    const dims = block.image?.asset?.metadata?.dimensions;
+    return dims?.width && dims?.height ? dims.width / dims.height : null;
+  });
+
   const isPortrait = $derived(
     block.mediaType === 'image'
       ? (block.image?.asset?.metadata?.dimensions?.height ?? 0) > (block.image?.asset?.metadata?.dimensions?.width ?? 0)
@@ -152,7 +162,7 @@
 
 {#if block.mediaType === 'image' && block.image}
   <section class="single-media-block type-image" class:is-solo={isSolo} class:is-portrait={isPortrait}>
-    <figure>
+    <figure class:has-ratio={imageRatio} style={imageRatio ? `--media-ratio: ${imageRatio}` : undefined}>
       <Image item={block.image} loading={eager ? 'eager' : 'lazy'} />
       {#if block.caption}
         <figcaption>{block.caption}</figcaption>

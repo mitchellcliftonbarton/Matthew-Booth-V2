@@ -731,6 +731,18 @@ Single Media Block (new Svelte component)
         display: block;
         max-height: var(--inner-height);
       }
+
+      /* When the intrinsic ratio is known, size the figure up front from
+         --media-ratio (set inline) so layout never consults the img's natural
+         size: WebKit resolves the fit-content width before a lazy image has
+         loaded — shrink-wrapping to the caption — and never re-resolves it. */
+      &.has-ratio {
+        width: min(100%, calc(var(--inner-height) * var(--media-ratio)));
+
+        img {
+          width: 100%;
+        }
+      }
     }
 
     @media (min-width: 1024px) {
@@ -810,6 +822,19 @@ Single Media Block (new Svelte component)
       @media (min-width: 1024px) {
         img {
           max-height: var(--inner-height-blocks);
+        }
+      }
+
+      /* same WebKit lazy-image guard as the solo figure above */
+      &.has-ratio {
+        width: min(100%, calc(80svh * var(--media-ratio)));
+
+        img {
+          width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+          width: min(100%, calc(var(--inner-height-blocks) * var(--media-ratio)));
         }
       }
     }
