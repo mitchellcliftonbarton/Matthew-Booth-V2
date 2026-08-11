@@ -70,7 +70,7 @@
     </nav>
 
     <nav class="category-links">
-      <ul class="flex items-center flex-wrap gap-sm-plus">
+      <ul class="flex items-center flex-wrap gap-x-sm-plus">
         <li>
           <a
             href={buildUrl({ category: null, view: viewParam })}
