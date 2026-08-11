@@ -1,8 +1,10 @@
 import { client } from '$lib/sanity/client.js';
 
-export async function load() {
+export async function load({ parent }) {
+  const { site } = await parent();
+
   const entries = await client.fetch(`
-    *[_type == "entry"] | order(orderRank asc) {
+    *[_type == "entry" && $site in sites] | order(orderRank asc) {
       _id,
       title,
       slug,
@@ -36,7 +38,7 @@ export async function load() {
       categories[]->{ _id, title, singularTitle },
       "firstTextBlock": blocks[_type == "textBlock"][0].text
     }
-  `).catch(() => []);
+  `, { site }).catch(() => []);
 
   return { entries };
 }

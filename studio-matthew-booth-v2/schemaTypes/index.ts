@@ -2,6 +2,7 @@ import siteSettings from './siteSettings'
 import category from './category'
 import page from './page'
 import entry from './entry'
+import siteUser from './siteUser'
 import textBlock from './blocks/textBlock'
 import cvSectionBlock from './blocks/cvSectionBlock'
 import vimeoEmbedBlock from './blocks/vimeoEmbedBlock'
@@ -15,6 +16,7 @@ export const schemaTypes = [
   category,
   page,
   entry,
+  siteUser,
   // Block object types
   textBlock,
   cvSectionBlock,

@@ -10,14 +10,14 @@ import { browser } from '$app/environment';
 const resultCache = new Map();
 
 export async function load({ params, parent }) {
-  const { entriesIndex } = await parent();
+  const { entriesIndex, site } = await parent();
 
   if (browser && resultCache.has(params.slug)) {
     return resultCache.get(params.slug);
   }
 
   const entry = await client.fetch(
-    `*[_type == "entry" && slug.current == $slug][0]{
+    `*[_type == "entry" && $site in sites && slug.current == $slug][0]{
       title,
       slug,
       italicizeTitle,
@@ -62,7 +62,7 @@ export async function load({ params, parent }) {
         relatedEntries[]->{ title, slug, italicizeTitle }
       }
     }`,
-    { slug: params.slug }
+    { slug: params.slug, site }
   ).catch(() => null);
 
   if (!entry) throw error(404, 'Entry not found');
