@@ -9,6 +9,13 @@
       "autoPort": false
     },
     {
+      "name": "svelte-dev-5199",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd svelte && exec /Users/MCB/.nvm/versions/node/v22.15.0/bin/node node_modules/vite/bin/vite.js dev --port 5199 --strictPort"],
+      "port": 5199,
+      "autoPort": false
+    },
+    {
       "name": "studio",
       "runtimeExecutable": "bash",
       "runtimeArgs": ["-c", "cd studio-matthew-booth-v2 && exec /Users/MCB/.nvm/versions/node/v22.15.0/bin/node node_modules/.bin/sanity dev --port 3333"],
