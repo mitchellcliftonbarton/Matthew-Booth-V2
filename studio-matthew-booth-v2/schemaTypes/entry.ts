@@ -1,3 +1,4 @@
+import {createElement} from 'react'
 import {ImageField, RichText} from '../utils/fields'
 import {SITES} from '../utils/sites'
 import {ReferenceCheckboxes} from '../components/ReferenceCheckboxes'
@@ -169,12 +170,76 @@ export default {
     },
   ],
   preview: {
+    // Mirror the site's thumbnail resolution: the custom thumbnail override
+    // when set, else the first media block (a carousel falls through to its
+    // first slide). Select paths are static, so probe the first few blocks
+    // and pick the first media block in prepare.
     select: {
       title: 'title',
-      media: 'featuredImage.image',
+      useCustom: 'useCustomThumbnail',
+      customMediaType: 'customThumbnail.mediaType',
+      customImage: 'customThumbnail.image',
+      customPlaybackId: 'customThumbnail.muxVideo.asset.playbackId',
+      customThumbTime: 'customThumbnail.muxVideo.asset.thumbTime',
+      ...Object.fromEntries(
+        [0, 1, 2, 3].flatMap((i) => [
+          [`b${i}Type`, `blocks.${i}._type`],
+          [`b${i}MediaType`, `blocks.${i}.mediaType`],
+          [`b${i}Image`, `blocks.${i}.image`],
+          [`b${i}PlaybackId`, `blocks.${i}.muxVideo.asset.playbackId`],
+          [`b${i}ThumbTime`, `blocks.${i}.muxVideo.asset.thumbTime`],
+          [`b${i}SlideMediaType`, `blocks.${i}.media.0.mediaType`],
+          [`b${i}SlideImage`, `blocks.${i}.media.0.image`],
+          [`b${i}SlidePlaybackId`, `blocks.${i}.media.0.muxVideo.asset.playbackId`],
+          [`b${i}SlideThumbTime`, `blocks.${i}.media.0.muxVideo.asset.thumbTime`],
+        ]),
+      ),
     },
-    prepare({title, media}: any) {
-      return {title, media: media?.asset}
+    prepare({title, useCustom, customMediaType, customImage, customPlaybackId, customThumbTime, ...blocks}: any) {
+      let thumb: any = null
+
+      if (useCustom) {
+        thumb = {
+          mediaType: customMediaType,
+          image: customImage,
+          playbackId: customPlaybackId,
+          thumbTime: customThumbTime,
+        }
+      } else {
+        for (const i of [0, 1, 2, 3]) {
+          const type = blocks[`b${i}Type`]
+          if (type === 'singleMediaBlock') {
+            thumb = {
+              mediaType: blocks[`b${i}MediaType`],
+              image: blocks[`b${i}Image`],
+              playbackId: blocks[`b${i}PlaybackId`],
+              thumbTime: blocks[`b${i}ThumbTime`],
+            }
+            break
+          }
+          if (type === 'carouselBlock') {
+            thumb = {
+              mediaType: blocks[`b${i}SlideMediaType`],
+              image: blocks[`b${i}SlideImage`],
+              playbackId: blocks[`b${i}SlidePlaybackId`],
+              thumbTime: blocks[`b${i}SlideThumbTime`],
+            }
+            break
+          }
+        }
+      }
+
+      let media
+      if (thumb?.mediaType === 'image' && thumb.image?.asset) {
+        media = thumb.image
+      } else if (thumb?.mediaType === 'muxVideo' && thumb.playbackId) {
+        media = createElement('img', {
+          src: `https://image.mux.com/${thumb.playbackId}/thumbnail.jpg?width=160&time=${thumb.thumbTime ?? 0}`,
+          style: {width: '100%', height: '100%', objectFit: 'cover'},
+        })
+      }
+
+      return {title, media}
     },
   },
 }

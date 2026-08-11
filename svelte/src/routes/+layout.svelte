@@ -7,6 +7,7 @@
 	import { onMount } from 'svelte';
 
 	import MainNav from '$lib/components/MainNav.svelte';
+	import { entryOgImageUrl } from '$lib/og.js';
 
 	// props
 	let { children, data } = $props();
@@ -17,6 +18,13 @@
 	const siteTitle = $derived(data.siteSettings?.siteTitle ?? 'Matthew Booth');
 	const pageTitle = $derived(page.data.entry?.title ?? page.data.page?.title ?? null);
 	const documentTitle = $derived(pageTitle ? `${pageTitle} — ${siteTitle}` : siteTitle);
+
+	// Same single-source pattern for share meta: entry pages share their list
+	// thumbnail, everything else falls back to the site-wide OG image.
+	const metaDescription = $derived(data.siteSettings?.metaDescription ?? null);
+	const ogImage = $derived(
+		entryOgImageUrl(page.data.entry) ?? data.siteSettings?.ogImage?.asset?.url ?? null
+	);
 
 	// Vars
 	let loadingTimeout;
@@ -43,6 +51,15 @@
 	<title>{documentTitle}</title>
 	<meta property="og:site_name" content={siteTitle} />
 	<meta property="og:locale" content="en_US" />
+	<meta property="og:title" content={documentTitle} />
+	{#if metaDescription}
+		<meta name="description" content={metaDescription} />
+		<meta property="og:description" content={metaDescription} />
+	{/if}
+	{#if ogImage}
+		<meta property="og:image" content={ogImage} />
+		<meta name="twitter:card" content="summary_large_image" />
+	{/if}
 </svelte:head>
 
 <MainNav />

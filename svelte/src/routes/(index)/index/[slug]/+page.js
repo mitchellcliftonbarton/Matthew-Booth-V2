@@ -31,7 +31,8 @@ export async function load({ params, parent }) {
         mediaType,
         image { asset->{ _id, url, metadata { dimensions } } },
         video { asset->{ url } },
-        "muxPlaybackId": muxVideo.asset->playbackId
+        "muxPlaybackId": muxVideo.asset->playbackId,
+        "muxThumbTime": muxVideo.asset->thumbTime
       },
       blocks[] {
         _type,
