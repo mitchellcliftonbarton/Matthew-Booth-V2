@@ -137,13 +137,18 @@ const htmlResponse = (body, status) =>
 
 export async function handle({ event, resolve }) {
 	const site = siteFromHost(event.url.host);
-	if (!GATED_SITES.includes(site)) return resolve(event);
 
+	// robots.txt must come from the worker, not a static file: Cloudflare
+	// serves static assets before the worker runs, so a static robots.txt
+	// would shadow the gated sites' disallow-everything version
 	if (event.url.pathname === '/robots.txt') {
-		return new Response('User-agent: *\nDisallow: /\n', {
-			headers: { 'content-type': 'text/plain' }
-		});
+		const body = GATED_SITES.includes(site)
+			? 'User-agent: *\nDisallow: /\n'
+			: '# allow crawling everything by default\nUser-agent: *\nDisallow:\n';
+		return new Response(body, { headers: { 'content-type': 'text/plain' } });
 	}
+
+	if (!GATED_SITES.includes(site)) return resolve(event);
 
 	// without a real secret, session cookies would be forgeable — refuse to
 	// serve the gated sites rather than run insecurely (dev gets a fallback)
