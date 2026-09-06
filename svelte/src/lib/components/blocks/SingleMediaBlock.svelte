@@ -17,13 +17,26 @@
     muxPlaybackId ? muxPosterUrl(muxPlaybackId, 1800, block.muxVideo?.asset?.thumbTime ?? 0) : null
   );
 
+  // Ratio the <video> reported once its metadata arrived, kept only when it
+  // disagrees with the stored one — the box is sized from stored data so
+  // layout is settled before the file loads, but stored data has been wrong
+  // (see muxAspectRatio) and a wrong box crops the video for good.
+  let measuredRatio = $state(null);
+
   const aspectRatio = $derived.by(() => {
+    if (measuredRatio) return measuredRatio;
     if (block.mediaType === 'muxVideo') {
       const r = muxAspectRatio(block.muxVideo?.asset);
       if (r) return r;
     }
     return block.width && block.height ? block.width / block.height : 16 / 9;
   });
+
+  function onLoadedMetadata() {
+    if (!videoEl?.videoWidth || !videoEl?.videoHeight) return;
+    const actual = videoEl.videoWidth / videoEl.videoHeight;
+    if (Math.abs(actual / aspectRatio - 1) > 0.02) measuredRatio = actual;
+  }
 
   // Known image ratio, passed to CSS as --media-ratio so the figure can be
   // sized without consulting the img's natural size: WebKit resolves the
@@ -184,6 +197,7 @@
             muted
             loop
             class="media-cover"
+            onloadedmetadata={onLoadedMetadata}
           ></video>
         {:else}
           <video
@@ -194,6 +208,7 @@
             preload="metadata"
             controls
             class="media-cover"
+            onloadedmetadata={onLoadedMetadata}
           ></video>
         {/if}
       </div>

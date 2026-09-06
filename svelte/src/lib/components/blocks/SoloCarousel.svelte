@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import Image from '$lib/components/Image.svelte';
-  import { attachMuxStream, muxPosterUrl } from '$lib/mux.js';
+  import { attachMuxStream, muxAspectRatio, muxPosterUrl } from '$lib/mux.js';
 
   let { block } = $props();
 
@@ -27,9 +27,9 @@
       const d = item.image?.asset?.metadata?.dimensions;
       if (d?.width && d?.height) return d.width / d.height;
     }
-    if (item.mediaType === 'muxVideo' && item.muxAspectRatio) {
-      const [w, h] = String(item.muxAspectRatio).split(':').map(Number);
-      if (w > 0 && h > 0) return w / h;
+    if (item.mediaType === 'muxVideo') {
+      const r = muxAspectRatio(item.muxAsset);
+      if (r) return r;
     }
     return null;
   }

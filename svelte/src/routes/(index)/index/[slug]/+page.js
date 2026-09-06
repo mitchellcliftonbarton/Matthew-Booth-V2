@@ -45,7 +45,7 @@ export async function load({ params, parent }) {
         text,
         image { ..., asset->{ _id, url, metadata { dimensions } } },
         video { asset->{ url } },
-        muxVideo { asset->{ playbackId, thumbTime, data { aspect_ratio } } },
+        muxVideo { asset->{ playbackId, thumbTime, data { aspect_ratio, tracks[] { type, max_width, max_height } } } },
         vimeoUrl,
         media[] {
           mediaType,
@@ -53,7 +53,7 @@ export async function load({ params, parent }) {
           image { ..., asset->{ _id, url, metadata { dimensions } } },
           "videoUrl": video.asset->url,
           "muxPlaybackId": muxVideo.asset->playbackId,
-          "muxAspectRatio": muxVideo.asset->data.aspect_ratio,
+          "muxAsset": muxVideo.asset->{ data { aspect_ratio, tracks[] { type, max_width, max_height } } },
           "muxThumbTime": muxVideo.asset->thumbTime
         }
       },

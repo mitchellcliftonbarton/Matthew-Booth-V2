@@ -1,6 +1,6 @@
 // Helpers for playing Mux assets through the site's own <video> elements.
-// Safari (incl. all of iOS) plays HLS natively; everywhere else we lazily
-// load hls.js. Callers keep full control of the element (autoplay, mute,
+// hls.js is lazily loaded wherever Media Source Extensions exist; iOS (no
+// MSE) plays HLS natively. Callers keep full control of the element (autoplay, mute,
 // custom Pause/Mute buttons) — this only wires up the stream.
 
 export function muxStreamUrl(playbackId) {
@@ -13,22 +13,33 @@ export function muxPosterUrl(playbackId, width = 1800, time = 0) {
 	return `https://image.mux.com/${playbackId}/thumbnail.jpg?width=${width}&time=${time ?? 0}`;
 }
 
-// "16:9" (Mux asset data format) -> 16/9 as a number, or null
+// Intrinsic ratio of a Mux asset as a number, or null. Prefers the encoded
+// video track's dimensions: Mux's own aspect_ratio string is derived from the
+// source file's metadata and can disagree with what was actually encoded
+// (a rotated/anamorphic phone upload reported "677:540" for a 664x1080
+// portrait stream), which mis-shaped the box and cropped the video.
 export function muxAspectRatio(asset) {
-	const raw = asset?.data?.aspect_ratio;
+	const data = asset?.data;
+	if (!data) return null;
+
+	const track = (data.tracks ?? []).find((t) => t.type === 'video');
+	if (track?.max_width > 0 && track?.max_height > 0) {
+		return track.max_width / track.max_height;
+	}
+
+	const raw = data.aspect_ratio;
 	if (!raw) return null;
 	const [w, h] = String(raw).split(':').map(Number);
 	return w > 0 && h > 0 ? w / h : null;
 }
 
 // Attaches the HLS stream to a <video>. Returns a cleanup function.
+// hls.js (MSE) is preferred wherever it runs; native HLS is only used where
+// MSE is unavailable (iOS). Some Chromium-based shells answer canPlayType
+// with "maybe" for HLS yet stall on the first frame, so native support is
+// not trusted just because it's advertised.
 export function attachMuxStream(videoEl, playbackId) {
 	const src = muxStreamUrl(playbackId);
-
-	if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
-		videoEl.src = src;
-		return () => {};
-	}
 
 	let hls = null;
 	let cancelled = false;
@@ -39,7 +50,7 @@ export function attachMuxStream(videoEl, playbackId) {
 			hls.loadSource(src);
 			hls.attachMedia(videoEl);
 		} else {
-			// last resort — some browsers may manage progressive playback
+			// no MSE (iOS Safari): the browser plays HLS itself
 			videoEl.src = src;
 		}
 	});
